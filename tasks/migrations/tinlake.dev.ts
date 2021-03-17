@@ -19,7 +19,7 @@ task('tinlake:dev', 'Deploy development enviroment')
 
     console.log('Migration started\n');
 
-    console.log('1. Deploy mock tokens for Tinlake');
+    console.log('1. Deploy mock tokens');
     await deployMockTokens(TinlakeConfig, verify);
 
     console.log('2. Deploy address provider');

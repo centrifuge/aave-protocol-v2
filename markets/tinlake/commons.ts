@@ -1,11 +1,4 @@
-import BigNumber from 'bignumber.js';
-import {
-  oneEther,
-  oneRay,
-  RAY,
-  ZERO_ADDRESS,
-  MOCK_CHAINLINK_AGGREGATORS_PRICES,
-} from '../../helpers/constants';
+import { oneRay, ZERO_ADDRESS, MOCK_CHAINLINK_AGGREGATORS_PRICES } from '../../helpers/constants';
 import { ICommonConfiguration, eEthereumNetwork } from '../../helpers/types';
 
 // ----------------
@@ -13,10 +6,10 @@ import { ICommonConfiguration, eEthereumNetwork } from '../../helpers/types';
 // ----------------
 
 export const CommonsConfig: ICommonConfiguration = {
-  MarketId: 'Commons',
-  ATokenNamePrefix: 'Tinlake interest bearing',
-  StableDebtTokenNamePrefix: 'Tinlake stable debt bearing',
-  VariableDebtTokenNamePrefix: 'Tinlake variable debt bearing',
+  MarketId: 'Tinlake',
+  ATokenNamePrefix: 'Tinlake Market',
+  StableDebtTokenNamePrefix: 'Tinlake Market stable debt',
+  VariableDebtTokenNamePrefix: 'Tinlake Market variable debt',
   SymbolPrefix: '',
   ProviderId: 0, // Overriden in index.ts
   ProtocolGlobalParams: {
@@ -41,6 +34,9 @@ export const CommonsConfig: ICommonConfiguration = {
   LendingRateOracleRatesCommon: {
     DAI: {
       borrowRate: oneRay.multipliedBy(0.039).toFixed(),
+    },
+    NS2DRP: {
+      borrowRate: oneRay.multipliedBy(1.0).toFixed(),
     },
   },
   // ----------------

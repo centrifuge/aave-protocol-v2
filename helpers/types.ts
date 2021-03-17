@@ -356,6 +356,7 @@ export enum TokenContractId {
   WMATIC = 'WMATIC',
   STAKE = 'STAKE',
   xSUSHI = 'xSUSHI',
+  NS2DRP = 'NS2DRP',
 }
 
 export interface IReserveParams extends IReserveBorrowParams, IReserveCollateralParams {

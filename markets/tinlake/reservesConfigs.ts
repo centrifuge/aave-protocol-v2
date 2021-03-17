@@ -4,9 +4,9 @@ import { rateStrategyStableTwo } from './rateStrategies';
 
 export const strategyDAI: IReserveParams = {
   strategy: rateStrategyStableTwo,
-  baseLTVAsCollateral: '7500',
-  liquidationThreshold: '0', // usageAsCollateralEnabled=false
-  liquidationBonus: '0', // usageAsCollateralEnabled=false
+  baseLTVAsCollateral: '0', // cannot be used as collateral
+  liquidationThreshold: '0', // cannot be used as collateral
+  liquidationBonus: '0', // cannot be used as collateral
   borrowingEnabled: true,
   stableBorrowRateEnabled: true,
   reserveDecimals: '18',
@@ -16,12 +16,12 @@ export const strategyDAI: IReserveParams = {
 
 export const strategyDROP: IReserveParams = {
   strategy: rateStrategyStableTwo,
-  baseLTVAsCollateral: '7500',
-  liquidationThreshold: '8000',
-  liquidationBonus: '10500',
-  borrowingEnabled: false,
-  stableBorrowRateEnabled: true,
+  baseLTVAsCollateral: '10000', // 100% loan to value
+  liquidationThreshold: '8000', // 80% liquidation threshold
+  liquidationBonus: '10500', // 5% liquidation bonus
+  borrowingEnabled: false, // whether borrowing is enabled on the reserve
+  stableBorrowRateEnabled: true, // whether stable borrowing is enabled
   reserveDecimals: '18',
   aTokenImpl: eContractid.AToken,
-  reserveFactor: '1000',
+  reserveFactor: '1000', // 10% reserve factor
 };

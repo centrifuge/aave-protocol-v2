@@ -53,7 +53,7 @@ task('dev:initialize-lending-pool', 'Initialize lending pool configuration.')
 
     const testHelpers = await deployAaveProtocolDataProvider(addressesProvider.address, verify);
 
-    const reservesParams = getReservesConfigByPool(AavePools.proto);
+    const reservesParams = getReservesConfigByPool(AavePools[pool.toLowerCase()]);
 
     const admin = await addressesProvider.getPoolAdmin();
 
@@ -72,7 +72,6 @@ task('dev:initialize-lending-pool', 'Initialize lending pool configuration.')
       verify
     );
     await configureReservesByHelper(reservesParams, protoPoolReservesAddresses, testHelpers, admin);
-
     const collateralManager = await deployLendingPoolCollateralManager(verify);
     await waitForTx(
       await addressesProvider.setLendingPoolCollateralManager(collateralManager.address)
@@ -91,7 +90,8 @@ task('dev:initialize-lending-pool', 'Initialize lending pool configuration.')
 
     await insertContractAddressInDb(eContractid.AaveProtocolDataProvider, testHelpers.address);
 
-    const lendingPoolAddress = await addressesProvider.getLendingPool();
-    const gateWay = await getParamPerNetwork(WethGateway, network);
-    await authorizeWETHGateway(gateWay, lendingPoolAddress);
+    // Next action should be done separately to prevent script to break, if the owner of Gateway is different than current deployer address
+    // const lendingPoolAddress = await addressesProvider.getLendingPool();
+    // const gateWay = await getParamPerNetwork(WethGateway, network);
+    // await authorizeWETHGateway(gateWay, lendingPoolAddress);
   });

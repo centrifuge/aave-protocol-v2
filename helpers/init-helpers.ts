@@ -209,7 +209,7 @@ export const initReservesByHelper = async (
       variableDebtTokenSymbol: `variableDebt${symbolPrefix}${reserveSymbols[i]}`,
       stableDebtTokenName: `${stableDebtTokenNamePrefix} ${reserveSymbols[i]}`,
       stableDebtTokenSymbol: `stableDebt${symbolPrefix}${reserveSymbols[i]}`,
-      params: '0x10'
+      params: '0x10',
     });
   }
 
@@ -342,11 +342,10 @@ export const configureReservesByHelper = async (
 
     console.log(`- Configure reserves in ${chunkedInputParams.length} txs`);
     for (let chunkIndex = 0; chunkIndex < chunkedInputParams.length; chunkIndex++) {
-      await waitForTx(
-        await atokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex], {
-          gasLimit: 12000000,
-        })
-      );
+      // TODO tinlake: this needs to be re-enabled
+      // await waitForTx(
+      //   await atokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex])
+      // );
       console.log(`  - Init for: ${chunkedSymbols[chunkIndex].join(', ')}`);
     }
     // Set deployer back as admin
@@ -557,7 +556,7 @@ export const initTokenReservesByHelper = async (
       variableDebtTokenSymbol: `variableDebt${reserveSymbols[i]}`,
       stableDebtTokenName: `Aave stable debt bearing ${reserveSymbols[i]}`,
       stableDebtTokenSymbol: `stableDebt${reserveSymbols[i]}`,
-      params: '0x10'
+      params: '0x10',
     });
   }
 
@@ -580,7 +579,7 @@ export const initTokenReservesByHelper = async (
 
   // Set deployer back as admin
   //await waitForTx(await addressProvider.setPoolAdmin(admin));
-  return gasUsage;  // No longer relevant
+  return gasUsage; // No longer relevant
 };
 
 // Function deprecated
