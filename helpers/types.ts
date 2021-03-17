@@ -38,6 +38,7 @@ export enum AavePools {
   proto = 'proto',
   matic = 'matic',
   amm = 'amm',
+  tinlake = 'tinlake',
 }
 
 export enum eContractid {
@@ -239,6 +240,7 @@ export interface iAssetBase<T> {
   WMATIC: T;
   STAKE: T;
   xSUSHI: T;
+  NS2DRP: T;
 }
 
 export type iAssetsWithoutETH<T> = Omit<iAssetBase<T>, 'ETH'>;
@@ -305,6 +307,8 @@ export type iXDAIPoolAssets<T> = Pick<
   'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'STAKE'
 >;
 
+export type iTinlakePoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'DAI' | 'NS2DRP'>;
+
 export type iMultiPoolsAssets<T> = iAssetCommon<T> | iAavePoolAssets<T>;
 
 export type iAavePoolTokens<T> = Omit<iAavePoolAssets<T>, 'ETH'>;
@@ -351,7 +355,7 @@ export enum TokenContractId {
   BptBALWETH = 'BptBALWETH',
   WMATIC = 'WMATIC',
   STAKE = 'STAKE',
-  xSUSHI = 'xSUSHI'
+  xSUSHI = 'xSUSHI',
 }
 
 export interface IReserveParams extends IReserveBorrowParams, IReserveCollateralParams {
@@ -424,6 +428,7 @@ export interface iParamsPerPool<T> {
   [AavePools.proto]: T;
   [AavePools.matic]: T;
   [AavePools.amm]: T;
+  [AavePools.tinlake]: T;
 }
 
 export interface iBasicDistributionParams {
@@ -510,8 +515,12 @@ export interface IXDAIConfiguration extends ICommonConfiguration {
   ReservesConfig: iXDAIPoolAssets<IReserveParams>;
 }
 
+export interface ITinlakeConfiguration extends ICommonConfiguration {
+  ReservesConfig: iTinlakePoolAssets<IReserveParams>;
+}
+
 export interface ITokenAddress {
   [token: string]: tEthereumAddress;
 }
 
-export type PoolConfiguration = ICommonConfiguration | IAaveConfiguration;
+export type PoolConfiguration = ICommonConfiguration | IAaveConfiguration | ITinlakeConfiguration;

@@ -453,6 +453,7 @@ export const deployMockTokens = async (config: PoolConfiguration, verify?: boole
   const configData = config.ReservesConfig;
 
   for (const tokenSymbol of Object.keys(configData)) {
+    console.log(`Deploying ${tokenSymbol}`);
     tokens[tokenSymbol] = await deployMintableERC20(
       [
         tokenSymbol,
@@ -546,7 +547,15 @@ export const deployMockVariableDebtToken = async (
 };
 
 export const deployMockAToken = async (
-  args: [tEthereumAddress, tEthereumAddress, tEthereumAddress, tEthereumAddress, string, string, string],
+  args: [
+    tEthereumAddress,
+    tEthereumAddress,
+    tEthereumAddress,
+    tEthereumAddress,
+    string,
+    string,
+    string
+  ],
   verify?: boolean
 ) => {
   const instance = await withSaveAndVerify(
