@@ -11,7 +11,10 @@ contract AssessorLike {
     function calcSeniorTokenPrice() external view returns(uint256);
 }
 
-contract TinlakeOracle is IPriceOracleGetter, Ownable {
+/**
+  This acts as a fallback oracle for the DROP tokens, and uses the token price from the Centrifuge ASSESSOR contract.
+ */
+contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   using SafeERC20 for IERC20;
 
   event AssetSourceUpdated(address indexed asset, address indexed source);

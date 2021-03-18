@@ -2,13 +2,13 @@ import { task } from 'hardhat/config';
 import { checkVerification } from '../../helpers/etherscan-verification';
 import { ConfigNames } from '../../helpers/configuration';
 import { printContracts } from '../../helpers/misc-utils';
-import TinlakeConfig from '../../markets/tinlake';
+import CentrifugeConfig from '../../markets/centrifuge';
 import { deployMockTokens } from '../../helpers/contracts-deployments';
 
-task('tinlake:dev', 'Deploy development enviroment')
+task('centrifuge:dev', 'Deploy development enviroment')
   .addOptionalParam('verify', 'Verify contracts at Etherscan')
   .setAction(async ({ verify }, localBRE) => {
-    const POOL_NAME = ConfigNames.Tinlake;
+    const POOL_NAME = ConfigNames.Centrifuge;
 
     await localBRE.run('set-DRE');
 
@@ -20,7 +20,7 @@ task('tinlake:dev', 'Deploy development enviroment')
     console.log('Migration started\n');
 
     console.log('1. Deploy mock tokens');
-    await deployMockTokens(TinlakeConfig, verify);
+    await deployMockTokens(CentrifugeConfig, verify);
 
     console.log('2. Deploy address provider');
     await localBRE.run('dev:deploy-address-provider', { verify });

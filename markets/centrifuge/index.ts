@@ -1,4 +1,4 @@
-import { ITinlakeConfiguration, eEthereumNetwork } from '../../helpers/types';
+import { ICentrifugeConfiguration, eEthereumNetwork } from '../../helpers/types';
 
 import { CommonsConfig } from './commons';
 import { strategyDAI, strategyDROP } from './reservesConfigs';
@@ -7,9 +7,9 @@ import { strategyDAI, strategyDROP } from './reservesConfigs';
 // POOL--SPECIFIC PARAMS
 // ----------------
 
-export const TinlakeConfig: ITinlakeConfiguration = {
+export const CentrifugeConfig: ICentrifugeConfiguration = {
   ...CommonsConfig,
-  MarketId: 'Tinlake genesis market',
+  MarketId: 'Centrifuge genesis market',
   ProviderId: 1,
   ReservesConfig: {
     DAI: strategyDAI,
@@ -34,4 +34,4 @@ export const TinlakeConfig: ITinlakeConfiguration = {
   },
 };
 
-export default TinlakeConfig;
+export default CentrifugeConfig;
