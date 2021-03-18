@@ -19,8 +19,8 @@ export const strategyDROP: IReserveParams = {
   baseLTVAsCollateral: '10000', // 100% loan to value
   liquidationThreshold: '8000', // 80% liquidation threshold
   liquidationBonus: '10500', // 5% liquidation bonus
-  borrowingEnabled: false, // whether borrowing is enabled on the reserve
-  stableBorrowRateEnabled: true, // whether stable borrowing is enabled
+  borrowingEnabled: false, // cannot be borrowed
+  stableBorrowRateEnabled: true, // stable borrowing is enabled
   reserveDecimals: '18',
   aTokenImpl: eContractid.AToken,
   reserveFactor: '1000', // 10% reserve factor

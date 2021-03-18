@@ -12,13 +12,14 @@ contract AssessorLike {
 }
 
 /**
-  This acts as a fallback oracle for the DROP tokens, and uses the token price from the Centrifuge ASSESSOR contract.
+  This acts as a fallback oracle for the DROP tokens, and uses the token price from the Tinlake ASSESSOR contract.
  */
 contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   using SafeERC20 for IERC20;
 
   event AssetSourceUpdated(address indexed asset, address indexed source);
 
+  // assetsSources are the ASSESSOR contract addresses for each DROP token.
   mapping(address => address) private assetsSources;
 
   /// @notice External function called by the Aave governance to set or replace sources of assets

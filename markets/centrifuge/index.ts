@@ -21,16 +21,14 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
     [eEthereumNetwork.coverage]: {},
     [eEthereumNetwork.kovan]: {
       DAI: '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD',
+      NS2DRP: '0x352Fee834a14800739DC72B219572d18618D9846',
     },
-    [eEthereumNetwork.ropsten]: {
-      DAI: '0xf80A32A835F79D7787E8a8ee5721D0fEaFd78108',
-    },
+    [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
       DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+      NS2DRP: '0xE4C72b4dE5b0F9ACcEA880Ad0b1F944F85A9dAA0',
     },
-    [eEthereumNetwork.tenderlyMain]: {
-      DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    },
+    [eEthereumNetwork.tenderlyMain]: {},
   },
 };
 
