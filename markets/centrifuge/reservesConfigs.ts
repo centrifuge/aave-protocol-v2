@@ -1,9 +1,9 @@
 import { eContractid, IReserveParams } from '../../helpers/types';
 
-import { rateStrategyStableTwo } from './rateStrategies';
+import { rateStrategyDROP, rateStrategyDAI } from './rateStrategies';
 
 export const strategyDAI: IReserveParams = {
-  strategy: rateStrategyStableTwo,
+  strategy: rateStrategyDAI,
   baseLTVAsCollateral: '0', // cannot be used as collateral
   liquidationThreshold: '0', // cannot be used as collateral
   liquidationBonus: '0', // cannot be used as collateral
@@ -15,7 +15,7 @@ export const strategyDAI: IReserveParams = {
 };
 
 export const strategyDROP: IReserveParams = {
-  strategy: rateStrategyStableTwo,
+  strategy: rateStrategyDROP,
   baseLTVAsCollateral: '10000', // 100% loan to value
   liquidationThreshold: '8000', // 80% liquidation threshold
   liquidationBonus: '10500', // 5% liquidation bonus
