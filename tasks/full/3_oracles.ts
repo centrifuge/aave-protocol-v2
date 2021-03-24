@@ -1,6 +1,10 @@
 import { task } from 'hardhat/config';
 import { getParamPerNetwork } from '../../helpers/contracts-helpers';
-import { deployAaveOracle, deployLendingRateOracle } from '../../helpers/contracts-deployments';
+import {
+  deployAaveOracle,
+  deployCentrifugeOracle,
+  deployLendingRateOracle,
+} from '../../helpers/contracts-deployments';
 import { setInitialMarketRatesInRatesOracleByHelper } from '../../helpers/oracles-helpers';
 import { ICommonConfiguration, eNetwork, SymbolMap } from '../../helpers/types';
 import { waitForTx, notFalsyOrZeroAddress } from '../../helpers/misc-utils';
@@ -38,7 +42,6 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       const admin = await getGenesisPoolAdmin(poolConfig);
       const aaveOracleAddress = getParamPerNetwork(poolConfig.AaveOracle, network);
       const lendingRateOracleAddress = getParamPerNetwork(poolConfig.LendingRateOracle, network);
-      const fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const chainlinkAggregators = await getParamPerNetwork(ChainlinkAggregator, network);
 
@@ -47,6 +50,12 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
         USD: UsdAddress,
       };
       const [tokens, aggregators] = getPairsTokenAggregator(tokensToWatch, chainlinkAggregators);
+
+      let fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
+      if (!fallbackOracleAddress && poolConfig.MarketId === 'Centrifuge genesis market') {
+        fallbackOracleAddress = (await deployCentrifugeOracle(verify)).address;
+        // TODO: setAssetSources
+      }
 
       let aaveOracle: AaveOracle;
       if (notFalsyOrZeroAddress(aaveOracleAddress)) {

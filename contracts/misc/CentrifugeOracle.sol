@@ -7,8 +7,8 @@ import {IERC20} from '../dependencies/openzeppelin/contracts/IERC20.sol';
 import {IPriceOracleGetter} from '../interfaces/IPriceOracleGetter.sol';
 import {SafeERC20} from '../dependencies/openzeppelin/contracts/SafeERC20.sol';
 
-contract AssessorLike {
-    function calcSeniorTokenPrice() external view returns(uint256);
+interface ICentrifugeAssessor {
+  function calcSeniorTokenPrice() external view returns (uint256);
 }
 
 /**
@@ -38,7 +38,7 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   function _setAssetsSources(address[] memory assets, address[] memory sources) internal {
     require(assets.length == sources.length, 'INCONSISTENT_PARAMS_LENGTH');
     for (uint256 i = 0; i < assets.length; i++) {
-      assetsSources[assets[i]] = AssessorLike(sources[i]);
+      assetsSources[assets[i]] = sources[i];
       emit AssetSourceUpdated(assets[i], sources[i]);
     }
   }
@@ -46,12 +46,12 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   /// @notice Gets an asset price by address
   /// @param asset The asset address
   function getAssetPrice(address asset) public view override returns (uint256) {
-    AssessorLike source = assetsSources[asset];
+    ICentrifugeAssessor source = ICentrifugeAssessor(assetsSources[asset]);
 
     if (address(source) == address(0)) {
       return 1 ether;
     } else {
-      return AssessorLike(source).calcSeniorTokenPrice();
+      return source.calcSeniorTokenPrice();
     }
   }
 }

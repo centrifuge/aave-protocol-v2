@@ -21,6 +21,7 @@ import {
   ATokenFactory,
   ATokensAndRatesHelperFactory,
   AaveOracleFactory,
+  CentrifugeOracleFactory,
   DefaultReserveInterestRateStrategyFactory,
   DelegationAwareATokenFactory,
   InitializableAdminUpgradeabilityProxyFactory,
@@ -213,6 +214,13 @@ export const deployAaveOracle = async (
     verify
   );
 
+export const deployCentrifugeOracle = async (verify?: boolean) =>
+  withSaveAndVerify(
+    await new CentrifugeOracleFactory(await getFirstSigner()).deploy(),
+    eContractid.CentrifugeOracle,
+    [],
+    verify
+  );
 export const deployLendingPoolCollateralManager = async (verify?: boolean) => {
   const collateralManagerImpl = await new LendingPoolCollateralManagerFactory(
     await getFirstSigner()
