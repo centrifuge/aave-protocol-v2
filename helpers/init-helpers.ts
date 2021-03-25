@@ -343,9 +343,9 @@ export const configureReservesByHelper = async (
     console.log(`- Configure reserves in ${chunkedInputParams.length} txs`);
     for (let chunkIndex = 0; chunkIndex < chunkedInputParams.length; chunkIndex++) {
       // TODO tinlake: this needs to be re-enabled
-      // await waitForTx(
-      //   await atokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex])
-      // );
+      await waitForTx(
+        await atokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex])
+      );
       console.log(`  - Init for: ${chunkedSymbols[chunkIndex].join(', ')}`);
     }
     // Set deployer back as admin

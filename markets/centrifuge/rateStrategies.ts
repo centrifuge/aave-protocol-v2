@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { oneRay } from '../../helpers/constants';
 import { IInterestRateStrategyParams } from '../../helpers/types';
 
-// DAI TUSD
+// DAI
 export const rateStrategyDAI: IInterestRateStrategyParams = {
   name: 'rateStrategyDAI',
   optimalUtilizationRate: new BigNumber(0.8).multipliedBy(oneRay).toFixed(),
@@ -13,7 +13,7 @@ export const rateStrategyDAI: IInterestRateStrategyParams = {
   stableRateSlope2: new BigNumber(0.75).multipliedBy(oneRay).toFixed(),
 };
 
-//DROP
+// DROP
 export const rateStrategyDROP: IInterestRateStrategyParams = {
   name: 'rateStrategyDROP',
   optimalUtilizationRate: new BigNumber(0.45).multipliedBy(oneRay).toFixed(),

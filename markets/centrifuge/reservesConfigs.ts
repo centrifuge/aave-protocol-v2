@@ -16,9 +16,9 @@ export const strategyDAI: IReserveParams = {
 
 export const strategyDROP: IReserveParams = {
   strategy: rateStrategyDROP,
-  baseLTVAsCollateral: '10000', // 100% loan to value
-  liquidationThreshold: '8000', // 80% liquidation threshold
-  liquidationBonus: '10500', // 5% liquidation bonus
+  baseLTVAsCollateral: '9500', // 95% loan to value
+  liquidationThreshold: '9700', // 97% liquidation threshold
+  liquidationBonus: '10200', // 2% liquidation bonus
   borrowingEnabled: false, // cannot be borrowed
   stableBorrowRateEnabled: true, // stable borrowing is enabled
   reserveDecimals: '18',
