@@ -71,4 +71,6 @@ export const MOCK_CHAINLINK_AGGREGATORS_PRICES = {
   xSUSHI: oneEther.multipliedBy('0.00913428586').toFixed(),
   USD: '5848466240000000',
   NS2DRP: oneEther.multipliedBy('1.0').toFixed(),
+  CF4DRP: oneEther.multipliedBy('1.0').toFixed(),
+  FF1DRP: oneEther.multipliedBy('1.0').toFixed(),
 };

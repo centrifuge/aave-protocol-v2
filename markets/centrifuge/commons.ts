@@ -35,9 +35,6 @@ export const CommonsConfig: ICommonConfiguration = {
     DAI: {
       borrowRate: oneRay.multipliedBy(0.039).toFixed(),
     },
-    NS2DRP: {
-      borrowRate: oneRay.multipliedBy(1.0).toFixed(),
-    },
   },
   // ----------------
   // COMMON PROTOCOL ADDRESSES ACROSS POOLS
@@ -169,6 +166,8 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.main]: {
       DAI: '0x773616E4d11A78F511299002da57A0a94577F1f4',
       NS2DRP: ZERO_ADDRESS,
+      CF4DRP: ZERO_ADDRESS,
+      FF1DRP: ZERO_ADDRESS,
     },
     [eEthereumNetwork.tenderlyMain]: {
       DAI: '0x773616E4d11A78F511299002da57A0a94577F1f4',
