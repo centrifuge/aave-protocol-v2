@@ -25,7 +25,6 @@ import {ReserveConfiguration} from '../libraries/configuration/ReserveConfigurat
 import {UserConfiguration} from '../libraries/configuration/UserConfiguration.sol';
 import {DataTypes} from '../libraries/types/DataTypes.sol';
 import {LendingPoolStorage} from './LendingPoolStorage.sol';
-import 'hardhat/console.sol';
 
 /**
  * @title LendingPool contract
@@ -117,10 +116,7 @@ contract LendingPool is VersionedInitializable, ILendingPool, LendingPoolStorage
     reserve.updateState();
     reserve.updateInterestRates(asset, aToken, amount, 0);
 
-    console.log('Trying to send %s tokens from %s to %s', amount, msg.sender, aToken);
-    console.log('Balance is %s', IERC20(asset).balanceOf(msg.sender));
-    IERC20(asset).transferFrom(msg.sender, aToken, amount);
-    // IERC20(asset).safeTransferFrom(msg.sender, aToken, amount);
+    IERC20(asset).safeTransferFrom(msg.sender, aToken, amount);
 
     bool isFirstDeposit = IAToken(aToken).mint(onBehalfOf, amount, reserve.liquidityIndex);
 
