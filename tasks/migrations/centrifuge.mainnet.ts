@@ -49,17 +49,17 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
       console.log('- Fork', postDeployFork);
     }
     console.log('\nFinished migrations');
-    // printContracts();
+    printContracts();
 
     const contractGetters = require('../../helpers/contracts-getters');
     const lendingPool = await contractGetters.getLendingPool();
-    const aToken = await contractGetters.getAToken();
     const DAI = await contractGetters.getIErc20Detailed(
       '0x6B175474E89094C44Da98b954EedeAC495271d0F'
     );
     const NS2DRP = await contractGetters.getIErc20Detailed(
       '0xE4C72b4dE5b0F9ACcEA880Ad0b1F944F85A9dAA0'
     );
+    const aNS2DRP = (await lendingPool.getReserveData(NS2DRP.address)).aTokenAddress;
 
     // Deposit DAI from a whale
     const whale = '0xB1AdceddB2941033a090dD166a462fe1c2029484';
@@ -73,11 +73,11 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log(`Old DAI balance: ${(await DAI.balanceOf(whale)).toString()}`);
     await lendingPool
       .connect(signer)
-      .deposit(DAI.address, DRE.ethers.utils.parseUnits('1000000'), await signer.getAddress(), '0');
-    console.log(`New DAI balance: ${(await DAI.balanceOf(whale)).toString()}`);
+      .deposit(DAI.address, DRE.ethers.utils.parseUnits('1000000'), whale, '0');
+    console.log(`New DAI balance: ${(await DAI.balanceOf(whale)).toString()}\n`);
 
-    // Whitelist the lending pool for NS2DRP
-    console.log(`2. Whitelisting the aToken contract for NS2DRP`);
+    // Whitelist the aNS2DRP contract to receive NS2DRP tokens
+    console.log(`2. Whitelisting the aNS2DRP contract for NS2DRP`);
     const memberlistAdmin = '0x71d9f8CFdcCEF71B59DD81AB387e523E2834F2b8';
     await DRE.network.provider.request({
       method: 'hardhat_impersonateAccount',
@@ -85,31 +85,40 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     });
     signer = await DRE.ethers.provider.getSigner(memberlistAdmin);
     const seniorMemberlist = '0x5B5CFD6E45F1407ABCb4BFD9947aBea1EA6649dA';
+
+    const tokenAbi = [`function hasMember(address) public view returns (bool)`];
+    const tokenContract = new DRE.ethers.Contract(NS2DRP.address, tokenAbi, signer);
+    console.log(`In memberlist: ${await tokenContract.hasMember(aNS2DRP)}`);
+
     const memberlistAbi = [`function updateMember(address usr, uint validUntil)`];
-    const memberlistInterface = new DRE.ethers.utils.Interface(memberlistAbi);
-    const updateMemberTx = memberlistInterface.encodeFunctionData('updateMember', [
-      aToken.address,
-      1717011101,
-    ]);
-    const tx = await signer.sendTransaction({ to: seniorMemberlist, data: updateMemberTx });
-    await tx.wait();
+    const memberlistContract = new DRE.ethers.Contract(seniorMemberlist, memberlistAbi, signer);
+    await memberlistContract.updateMember(aNS2DRP, 1717011101);
+
+    console.log(`In memberlist: ${await tokenContract.hasMember(aNS2DRP)}\n`);
 
     // Deposit NS2DRP as collateral
     const dropHolder = '0xb9d64860F0064DBFB9b64065238dDA80D36FcA17';
-    console.log(`3. Depositing 10.000 NS2DRP from ${dropHolder}`);
+    console.log(`3. Depositing NS2DRP from ${dropHolder}`);
     await DRE.network.provider.request({
       method: 'hardhat_impersonateAccount',
       params: [dropHolder],
     });
     signer = await DRE.ethers.provider.getSigner(dropHolder);
+    console.log(`Signer address is ${await signer.getAddress()}`);
     console.log(`Old NS2DRP balance: ${(await NS2DRP.balanceOf(dropHolder)).toString()}`);
-    await NS2DRP.approve(lendingPool.address, DRE.ethers.utils.parseUnits('10000'));
+    await NS2DRP.connect(signer).approve(lendingPool.address, DRE.ethers.utils.parseUnits('10000'));
 
-    await lendingPool.deposit(
-      NS2DRP.address,
-      DRE.ethers.utils.parseUnits('10000'),
-      await signer.getAddress(),
-      '0'
-    );
-    console.log(`New NS2DRP balance: ${(await NS2DRP.balanceOf(dropHolder)).toString()}`);
+    await lendingPool
+      .connect(signer)
+      .deposit(NS2DRP.address, DRE.ethers.utils.parseUnits('10000'), dropHolder, '0');
+    console.log(`New NS2DRP balance: ${(await NS2DRP.balanceOf(dropHolder)).toString()}\n`);
+
+    // Borrow DAI
+    console.log(`4. Borrowing DAI as ${dropHolder}`);
+    // await lendingPool.setUserUseReserveAsCollateral(NS2DRP.address, true);
+    console.log(`Old DAI balance: ${(await DAI.balanceOf(dropHolder)).toString()}`);
+    await lendingPool
+      .connect(signer)
+      .borrow(DAI.address, DRE.ethers.utils.parseUnits('10000'), 1, 0, await signer.getAddress());
+    console.log(`New DAI balance: ${(await DAI.balanceOf(dropHolder)).toString()}`);
   });
