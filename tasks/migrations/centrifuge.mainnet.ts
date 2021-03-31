@@ -3,6 +3,7 @@ import { checkVerification } from '../../helpers/etherscan-verification';
 import { ConfigNames } from '../../helpers/configuration';
 import { printContracts } from '../../helpers/misc-utils';
 import { usingTenderly } from '../../helpers/tenderly-utils';
+import * as contractGetters from '../../helpers/contracts-getters';
 
 task('centrifuge:mainnet', 'Deploy development enviroment')
   .addFlag('verify', 'Verify contracts at Etherscan')
@@ -51,7 +52,6 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log('\nFinished migrations');
     printContracts();
 
-    const contractGetters = require('../../helpers/contracts-getters');
     const lendingPool = await contractGetters.getLendingPool();
     const DAI = await contractGetters.getIErc20Detailed(
       '0x6B175474E89094C44Da98b954EedeAC495271d0F'
@@ -97,7 +97,7 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log(`In memberlist: ${await tokenContract.hasMember(aNS2DRP)}\n`);
 
     // Deposit NS2DRP as collateral
-    const dropHolder = '0xb9d64860F0064DBFB9b64065238dDA80D36FcA17';
+    const dropHolder = '0x648d7638C9D2f8aA5a08B551295a92E4Bc02d973';
     console.log(`3. Depositing NS2DRP from ${dropHolder}`);
     await DRE.network.provider.request({
       method: 'hardhat_impersonateAccount',
@@ -115,10 +115,15 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
 
     // Borrow DAI
     console.log(`4. Borrowing DAI as ${dropHolder}`);
-    // await lendingPool.setUserUseReserveAsCollateral(NS2DRP.address, true);
+    const oracle = await contractGetters.getAaveOracle();
+    const daiPrice = await oracle.getAssetPrice(DAI.address);
+    console.log(`DAI price: ${daiPrice}`);
+    const dropPrice = await oracle.getAssetPrice(NS2DRP.address);
+    console.log(`NS2DRP price: ${dropPrice}`);
+
     console.log(`Old DAI balance: ${(await DAI.balanceOf(dropHolder)).toString()}`);
     await lendingPool
       .connect(signer)
-      .borrow(DAI.address, DRE.ethers.utils.parseUnits('10000'), 1, 0, await signer.getAddress());
+      .borrow(DAI.address, DRE.ethers.utils.parseUnits('9500'), 1, 0, await signer.getAddress());
     console.log(`New DAI balance: ${(await DAI.balanceOf(dropHolder)).toString()}`);
   });

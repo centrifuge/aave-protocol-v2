@@ -52,9 +52,15 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       const [tokens, aggregators] = getPairsTokenAggregator(tokensToWatch, chainlinkAggregators);
 
       let fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
+      let centrifugeOracle;
       if (!fallbackOracleAddress && poolConfig.MarketId === 'Centrifuge genesis market') {
-        fallbackOracleAddress = (await deployCentrifugeOracle(verify)).address;
-        // TODO: setAssetSources
+        centrifugeOracle = await deployCentrifugeOracle(verify);
+        fallbackOracleAddress = centrifugeOracle.address;
+        // TODO: we should define the assessor contract addresses somewhere else
+        centrifugeOracle.setAssetSources(
+          [tokensToWatch['NS2DRP']],
+          ['0xdA0bA5Dd06C8BaeC53Fa8ae25Ad4f19088D6375b']
+        );
       }
 
       let aaveOracle: AaveOracle;
@@ -70,6 +76,10 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
           [tokens, aggregators, fallbackOracleAddress, await getWethAddress(poolConfig)],
           verify
         );
+      }
+
+      if (poolConfig.MarketId === 'Centrifuge genesis market') {
+        centrifugeOracle.setAaveOracle(aaveOracle.address);
       }
 
       let lendingRateOracle = notFalsyOrZeroAddress(lendingRateOracleAddress)

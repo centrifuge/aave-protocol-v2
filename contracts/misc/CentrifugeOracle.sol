@@ -6,6 +6,7 @@ import {IERC20} from '../dependencies/openzeppelin/contracts/IERC20.sol';
 
 import {IPriceOracleGetter} from '../interfaces/IPriceOracleGetter.sol';
 import {SafeERC20} from '../dependencies/openzeppelin/contracts/SafeERC20.sol';
+import {SafeMath} from '../dependencies/openzeppelin/contracts//SafeMath.sol';
 
 interface ICentrifugeAssessor {
   function calcSeniorTokenPrice() external view returns (uint256);
@@ -16,11 +17,20 @@ interface ICentrifugeAssessor {
  */
 contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   using SafeERC20 for IERC20;
+  using SafeMath for uint256;
 
   event AssetSourceUpdated(address indexed asset, address indexed source);
 
+  address DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+
   // assetsSources are the ASSESSOR contract addresses for each DROP token.
   mapping(address => address) private assetsSources;
+
+  address private aaveOracle;
+
+  function setAaveOracle(address oracle) external onlyOwner {
+    aaveOracle = oracle;
+  }
 
   /// @notice External function called by the Aave governance to set or replace sources of assets
   /// @param assets The addresses of the assets
@@ -47,11 +57,12 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   /// @param asset The asset address
   function getAssetPrice(address asset) public view override returns (uint256) {
     ICentrifugeAssessor source = ICentrifugeAssessor(assetsSources[asset]);
+    uint256 daiPrice = IPriceOracleGetter(aaveOracle).getAssetPrice(DAI);
 
     if (address(source) == address(0)) {
       return 1 ether;
     } else {
-      return source.calcSeniorTokenPrice();
+      return source.calcSeniorTokenPrice().mul(daiPrice).div(10**27);
     }
   }
 }
