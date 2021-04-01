@@ -159,6 +159,9 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.buidlerevm]: {},
     [eEthereumNetwork.kovan]: {
       DAI: '0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541',
+      NS2DRP: ZERO_ADDRESS,
+      CF4DRP: ZERO_ADDRESS,
+      FF1DRP: ZERO_ADDRESS,
     },
     [eEthereumNetwork.ropsten]: {
       DAI: '0x64b8e49baded7bfb2fd5a9235b2440c0ee02971b',
