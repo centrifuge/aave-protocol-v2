@@ -2,62 +2,63 @@
 pragma solidity 0.6.12;
 
 import {Ownable} from '../dependencies/openzeppelin/contracts/Ownable.sol';
-import {IERC20} from '../dependencies/openzeppelin/contracts/IERC20.sol';
-
+import {SafeMath} from '../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {IPriceOracleGetter} from '../interfaces/IPriceOracleGetter.sol';
-import {SafeERC20} from '../dependencies/openzeppelin/contracts/SafeERC20.sol';
-import {SafeMath} from '../dependencies/openzeppelin/contracts//SafeMath.sol';
 
 interface ICentrifugeAssessor {
   function calcSeniorTokenPrice() external view returns (uint256);
 }
 
 /**
-  This acts as a fallback oracle for the DROP tokens, and uses the token price from the Tinlake ASSESSOR contract.
+  This acts as a fallback oracle for the DROP tokens, and uses the token price from the Tinlake Assessor contract.
  */
 contract CentrifugeOracle is IPriceOracleGetter, Ownable {
-  using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
-  event AssetSourceUpdated(address indexed asset, address indexed source);
+  event AssetConfigUpdated(address indexed asset, address indexed source, address indexed currency);
 
-  address DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+  // assetSources are the assessor contract addresses for each DROP token.
+  mapping(address => ICentrifugeAssessor) public assetsSources;
 
-  // assetsSources are the ASSESSOR contract addresses for each DROP token.
-  mapping(address => address) private assetsSources;
+  // assetCurrencies are the currencies in which each DROP token is denominated.
+  mapping(address => address) public assetsCurrencies;
 
+  // aaveOracle is the address of the deployed AaveOracle contract.
   address private aaveOracle;
 
-  function setAaveOracle(address oracle) external onlyOwner {
-    aaveOracle = oracle;
+  /// @notice External function called by the Aave governance to set or replace the Aave oracle address
+  /// @param _aaveOracle The address of the aave oracle
+  function setAaveOracle(address _aaveOracle) external onlyOwner {
+    aaveOracle = _aaveOracle;
   }
 
   /// @notice External function called by the Aave governance to set or replace sources of assets
   /// @param assets The addresses of the assets
   /// @param sources The address of the source of each asset
-  function setAssetSources(address[] calldata assets, address[] calldata sources)
-    external
-    onlyOwner
-  {
-    _setAssetsSources(assets, sources);
-  }
+  function setAssetConfig(
+    address[] memory assets,
+    address[] memory sources,
+    address[] memory currencies
+  ) external onlyOwner {
+    require(
+      assets.length == sources.length && assets.length == currencies.length,
+      'INCONSISTENT_PARAMS_LENGTH'
+    );
 
-  /// @notice Internal function to set the sources for each asset
-  /// @param assets The addresses of the assets
-  /// @param sources The address of the source of each asset
-  function _setAssetsSources(address[] memory assets, address[] memory sources) internal {
-    require(assets.length == sources.length, 'INCONSISTENT_PARAMS_LENGTH');
     for (uint256 i = 0; i < assets.length; i++) {
-      assetsSources[assets[i]] = sources[i];
-      emit AssetSourceUpdated(assets[i], sources[i]);
+      assetsSources[assets[i]] = ICentrifugeAssessor(sources[i]);
+      assetsCurrencies[assets[i]] = currencies[i];
+      emit AssetConfigUpdated(assets[i], sources[i], currencies[i]);
     }
   }
 
   /// @notice Gets an asset price by address
   /// @param asset The asset address
   function getAssetPrice(address asset) public view override returns (uint256) {
-    ICentrifugeAssessor source = ICentrifugeAssessor(assetsSources[asset]);
-    uint256 daiPrice = IPriceOracleGetter(aaveOracle).getAssetPrice(DAI);
+    ICentrifugeAssessor source = assetsSources[asset];
+    address currency = assetsCurrencies[asset];
+
+    uint256 daiPrice = IPriceOracleGetter(aaveOracle).getAssetPrice(currency);
 
     if (address(source) == address(0)) {
       return 1 ether;

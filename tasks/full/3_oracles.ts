@@ -6,7 +6,12 @@ import {
   deployLendingRateOracle,
 } from '../../helpers/contracts-deployments';
 import { setInitialMarketRatesInRatesOracleByHelper } from '../../helpers/oracles-helpers';
-import { ICommonConfiguration, eNetwork, SymbolMap } from '../../helpers/types';
+import {
+  ICommonConfiguration,
+  eNetwork,
+  SymbolMap,
+  ICentrifugeConfiguration,
+} from '../../helpers/types';
 import { waitForTx, notFalsyOrZeroAddress } from '../../helpers/misc-utils';
 import {
   ConfigNames,
@@ -56,10 +61,13 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       if (!fallbackOracleAddress && poolConfig.MarketId === 'Centrifuge genesis market') {
         centrifugeOracle = await deployCentrifugeOracle(verify);
         fallbackOracleAddress = centrifugeOracle.address;
-        // TODO: we should define the assessor contract addresses somewhere else
-        centrifugeOracle.setAssetSources(
-          [tokensToWatch['NS2DRP']],
-          ['0xdA0bA5Dd06C8BaeC53Fa8ae25Ad4f19088D6375b']
+
+        const centrifugeConfig = poolConfig as ICentrifugeConfiguration;
+        const dropTokens = ['NS2DRP', 'CF4DRP', 'FF1DRP'];
+        centrifugeOracle.setAssetConfig(
+          dropTokens.map((token) => tokensToWatch[token]),
+          dropTokens.map((token) => centrifugeConfig.AssessorContracts[token]),
+          dropTokens.map((token) => centrifugeConfig.AssetCurrencies[token])
         );
       }
 

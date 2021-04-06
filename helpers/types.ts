@@ -526,6 +526,8 @@ export interface IXDAIConfiguration extends ICommonConfiguration {
 
 export interface ICentrifugeConfiguration extends ICommonConfiguration {
   ReservesConfig: iCentrifugePoolAssets<IReserveParams>;
+  AssessorContracts: ITokenAddress;
+  AssetCurrencies: ITokenAddress;
 }
 
 export interface ITokenAddress {
