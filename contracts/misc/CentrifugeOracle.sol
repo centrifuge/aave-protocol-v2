@@ -17,10 +17,10 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
 
   event AssetConfigUpdated(address indexed asset, address indexed source, address indexed currency);
 
-  // assetSources are the assessor contract addresses for each DROP token.
+  // assetsSources are the assessor contract addresses for each DROP token.
   mapping(address => ICentrifugeAssessor) public assetsSources;
 
-  // assetCurrencies are the currencies in which each DROP token is denominated.
+  // assetsCurrencies are the currencies in which each DROP token is denominated.
   mapping(address => address) public assetsCurrencies;
 
   // aaveOracle is the address of the deployed AaveOracle contract.
@@ -35,6 +35,7 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   /// @notice External function called by the Aave governance to set or replace sources of assets
   /// @param assets The addresses of the assets
   /// @param sources The address of the source of each asset
+  /// @param currencies The address of the currency of each asset
   function setAssetConfig(
     address[] memory assets,
     address[] memory sources,
