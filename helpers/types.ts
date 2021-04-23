@@ -89,6 +89,9 @@ export enum eContractid {
   UniswapRepayAdapter = 'UniswapRepayAdapter',
   FlashLiquidationAdapter = 'FlashLiquidationAdapter',
   CentrifugeOracle = 'CentrifugeOracle',
+  PermissionManager = 'PermissionManager',
+  PermissionedStableDebtToken = 'PermissionedStableDebtToken',
+  PermissionedVariableDebtToken = 'PermissionedVariableDebtToken',
 }
 
 /*
@@ -275,6 +278,8 @@ export type iAavePoolAssets<T> = Pick<
   | 'xSUSHI'
 >;
 
+export type iAaveProPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'USDT' | 'WBTC' | 'WETH'>;
+
 export type iLpPoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
   | 'DAI'
@@ -369,6 +374,8 @@ export enum TokenContractId {
 
 export interface IReserveParams extends IReserveBorrowParams, IReserveCollateralParams {
   aTokenImpl: eContractid;
+  stableDebtTokenImpl?: eContractid;
+  variableDebtTokenImpl?: eContractid;
   reserveFactor: string;
   strategy: IInterestRateStrategyParams;
 }
@@ -512,6 +519,9 @@ export interface IAaveConfiguration extends ICommonConfiguration {
   ReservesConfig: iAavePoolAssets<IReserveParams>;
 }
 
+export interface IAaveProConfiguration extends ICommonConfiguration {
+  ReservesConfig: iAaveProPoolAssets<IReserveParams>;
+}
 export interface IAmmConfiguration extends ICommonConfiguration {
   ReservesConfig: iLpPoolAssets<IReserveParams>;
 }

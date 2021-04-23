@@ -96,7 +96,33 @@ interface IAToken is IERC20, IScaledBalanceToken, IInitializableAToken {
   function handleRepayment(address user, uint256 amount) external;
 
   /**
+   * @dev implements the permit function as for
+   * https://github.com/ethereum/EIPs/blob/8a34d644aacf0f9f8f00815307fd7dd5da07655f/EIPS/eip-2612.md
+   * @param owner The owner of the funds
+   * @param spender The spender
+   * @param value The amount
+   * @param deadline The deadline timestamp, type(uint256).max for max deadline
+   * @param v Signature param
+   * @param s Signature param
+   * @param r Signature param
+   */
+  function permit(
+    address owner,
+    address spender,
+    uint256 value,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external;
+
+  /**
    * @dev Returns the address of the incentives controller contract
    **/
   function getIncentivesController() external view returns (IAaveIncentivesController);
+
+  /**
+   * @dev Returns the address of the underlying asset of this aToken (E.g. WETH for aWETH)
+   **/
+  function UNDERLYING_ASSET_ADDRESS() external view returns (address);
 }
