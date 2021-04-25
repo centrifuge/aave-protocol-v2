@@ -8,9 +8,11 @@ export const strategyDAI: IReserveParams = {
   liquidationThreshold: '0', // cannot be used as collateral
   liquidationBonus: '0', // cannot be used as collateral
   borrowingEnabled: true,
-  stableBorrowRateEnabled: true,
+  stableBorrowRateEnabled: false,
   reserveDecimals: '18',
   aTokenImpl: eContractid.AToken,
+  stableDebtTokenImpl: eContractid.PermissionedStableDebtToken,
+  variableDebtTokenImpl: eContractid.PermissionedVariableDebtToken,
   reserveFactor: '1000',
 };
 
@@ -20,8 +22,10 @@ export const strategyDROP: IReserveParams = {
   liquidationThreshold: '9700', // 97% liquidation threshold
   liquidationBonus: '10200', // 2% liquidation bonus
   borrowingEnabled: false, // cannot be borrowed
-  stableBorrowRateEnabled: true, // stable borrowing is enabled
+  stableBorrowRateEnabled: false,
   reserveDecimals: '18',
   aTokenImpl: eContractid.AToken,
+  stableDebtTokenImpl: eContractid.PermissionedStableDebtToken,
+  variableDebtTokenImpl: eContractid.PermissionedVariableDebtToken,
   reserveFactor: '1000', // 10% reserve factor
 };

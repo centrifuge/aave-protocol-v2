@@ -21,16 +21,19 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log('1. Deploy address provider');
     await DRE.run('full:deploy-address-provider', { pool: POOL_NAME });
 
-    console.log('2. Deploy lending pool');
-    await DRE.run('full:deploy-lending-pool', { pool: POOL_NAME });
+    console.log('2. Deploy permissions manager');
+    await DRE.run('deploy-permission-manager', { pool: POOL_NAME });
 
-    console.log('3. Deploy oracles');
+    console.log('3. Deploy lending pool');
+    await DRE.run('full:deploy-lending-pool', { pool: POOL_NAME, permissioned: true });
+
+    console.log('4. Deploy oracles');
     await DRE.run('full:deploy-oracles', { pool: POOL_NAME });
 
-    console.log('4. Deploy Data Provider');
+    console.log('5. Deploy Data Provider');
     await DRE.run('full:data-provider', { pool: POOL_NAME });
 
-    console.log('5. Initialize lending pool');
+    console.log('6. Initialize lending pool');
     await DRE.run('full:initialize-lending-pool', { pool: POOL_NAME });
 
     if (verify) {
@@ -124,6 +127,6 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log(`Old DAI balance: ${(await DAI.balanceOf(dropHolder)).toString()}`);
     await lendingPool
       .connect(signer)
-      .borrow(DAI.address, DRE.ethers.utils.parseUnits('9500'), 1, 0, await signer.getAddress());
+      .borrow(DAI.address, DRE.ethers.utils.parseUnits('9500'), 2, 0, await signer.getAddress());
     console.log(`New DAI balance: ${(await DAI.balanceOf(dropHolder)).toString()}`);
   });

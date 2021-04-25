@@ -52,6 +52,7 @@ import {
   FlashLiquidationAdapterFactory,
   PermissionedVariableDebtTokenFactory,
   PermissionedStableDebtTokenFactory,
+  PermissionedLendingPoolFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -174,9 +175,11 @@ export const deployAaveLibraries = async (
   };
 };
 
-export const deployLendingPool = async (verify?: boolean) => {
+export const deployLendingPool = async (verify?: boolean, permissioned?: boolean) => {
   const libraries = await deployAaveLibraries(verify);
-  const lendingPoolImpl = await new LendingPoolFactory(libraries, await getFirstSigner()).deploy();
+  const lendingPoolImpl = await new (permissioned
+    ? PermissionedLendingPoolFactory
+    : LendingPoolFactory)(libraries, await getFirstSigner()).deploy();
   await insertContractAddressInDb(eContractid.LendingPoolImpl, lendingPoolImpl.address);
   return withSaveAndVerify(lendingPoolImpl, eContractid.LendingPool, [], verify);
 };
