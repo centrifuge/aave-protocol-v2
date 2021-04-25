@@ -21,6 +21,7 @@ import {
   ATokenFactory,
   ATokensAndRatesHelperFactory,
   AaveOracleFactory,
+  CentrifugeOracleFactory,
   DefaultReserveInterestRateStrategyFactory,
   DelegationAwareATokenFactory,
   InitializableAdminUpgradeabilityProxyFactory,
@@ -38,6 +39,7 @@ import {
   MockStableDebtTokenFactory,
   MockVariableDebtTokenFactory,
   MockUniswapV2Router02Factory,
+  PermissionedLendingPoolFactory,
   PriceOracleFactory,
   ReserveLogicFactory,
   SelfdestructTransferFactory,
@@ -173,9 +175,11 @@ export const deployAaveLibraries = async (
   };
 };
 
-export const deployLendingPool = async (verify?: boolean) => {
+export const deployLendingPool = async (verify?: boolean, permissioned?: boolean) => {
   const libraries = await deployAaveLibraries(verify);
-  const lendingPoolImpl = await new LendingPoolFactory(libraries, await getFirstSigner()).deploy();
+  const lendingPoolImpl = await new (permissioned
+    ? PermissionedLendingPoolFactory
+    : LendingPoolFactory)(libraries, await getFirstSigner()).deploy();
   await insertContractAddressInDb(eContractid.LendingPoolImpl, lendingPoolImpl.address);
   return withSaveAndVerify(lendingPoolImpl, eContractid.LendingPool, [], verify);
 };
@@ -669,5 +673,13 @@ export const deployFlashLiquidationAdapter = async (
     await new FlashLiquidationAdapterFactory(await getFirstSigner()).deploy(...args),
     eContractid.FlashLiquidationAdapter,
     args,
+    verify
+  );
+
+export const deployCentrifugeOracle = async (verify?: boolean) =>
+  withSaveAndVerify(
+    await new CentrifugeOracleFactory(await getFirstSigner()).deploy(),
+    eContractid.CentrifugeOracle,
+    [],
     verify
   );
