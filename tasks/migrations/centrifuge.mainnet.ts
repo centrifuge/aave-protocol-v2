@@ -56,6 +56,8 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     printContracts();
 
     const lendingPool = await contractGetters.getLendingPool();
+    const permissionManager = await contractGetters.getPermissionsManager();
+    const owner = await contractGetters.getFirstSigner();
     const DAI = await contractGetters.getIErc20Detailed(
       '0x6B175474E89094C44Da98b954EedeAC495271d0F'
     );
@@ -64,9 +66,17 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     );
     const aNS2DRP = (await lendingPool.getReserveData(NS2DRP.address)).aTokenAddress;
 
-    // Deposit DAI from a whale
+    // Give permissions
     const whale = '0xB1AdceddB2941033a090dD166a462fe1c2029484';
+    const dropHolder = '0x648d7638C9D2f8aA5a08B551295a92E4Bc02d973';
+    permissionManager.connect(owner).addPermissionAdmins([await owner.getAddress()]);
+    permissionManager
+      .connect(owner)
+      .addPermissions([DEPOSITOR, DEPOSITOR, BORROWER], [whale, dropHolder, dropHolder]);
+
+    // Deposit DAI from a whale
     console.log(`1. Depositing 1M DAI from ${whale}`);
+
     await DRE.network.provider.request({
       method: 'hardhat_impersonateAccount',
       params: [whale],
@@ -100,7 +110,6 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log(`In memberlist: ${await tokenContract.hasMember(aNS2DRP)}\n`);
 
     // Deposit NS2DRP as collateral
-    const dropHolder = '0x648d7638C9D2f8aA5a08B551295a92E4Bc02d973';
     console.log(`3. Depositing NS2DRP from ${dropHolder}`);
     await DRE.network.provider.request({
       method: 'hardhat_impersonateAccount',
@@ -130,3 +139,7 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
       .borrow(DAI.address, DRE.ethers.utils.parseUnits('9500'), 2, 0, await signer.getAddress());
     console.log(`New DAI balance: ${(await DAI.balanceOf(dropHolder)).toString()}`);
   });
+
+const DEPOSITOR = 0,
+  BORROWER = 1,
+  LIQUIDATOR = 2;
