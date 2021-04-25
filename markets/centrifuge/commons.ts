@@ -144,7 +144,6 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.tenderlyMain]: ZERO_ADDRESS,
   },
   FallbackOracle: {
-    // This is the CentrifugeOracle
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',
     [eEthereumNetwork.buidlerevm]: '',

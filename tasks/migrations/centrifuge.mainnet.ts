@@ -69,7 +69,8 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     // Give permissions
     const whale = '0xB1AdceddB2941033a090dD166a462fe1c2029484';
     const dropHolder = '0x648d7638C9D2f8aA5a08B551295a92E4Bc02d973';
-    permissionManager.connect(owner).addPermissionAdmins([await owner.getAddress()]);
+    const kovanAdmin = '0x0A735602a357802f553113F5831FE2fbf2F0E2e0';
+    permissionManager.connect(owner).addPermissionAdmins([await owner.getAddress(), kovanAdmin]);
     permissionManager
       .connect(owner)
       .addPermissions([DEPOSITOR, DEPOSITOR, BORROWER], [whale, dropHolder, dropHolder]);

@@ -58,16 +58,22 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
 
       let fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
       let centrifugeOracle;
-      if (!fallbackOracleAddress && poolConfig.MarketId === 'Centrifuge genesis market') {
+      if (poolConfig.MarketId === 'Centrifuge genesis market') {
         centrifugeOracle = await deployCentrifugeOracle(verify);
         fallbackOracleAddress = centrifugeOracle.address;
 
         const centrifugeConfig = poolConfig as ICentrifugeConfiguration;
-        const dropTokens = ['NS2DRP', 'CF4DRP', 'FF1DRP'];
+        const assessorContracts = await getParamPerNetwork(
+          centrifugeConfig.AssessorContracts,
+          network
+        );
+        const assetCurrencies = await getParamPerNetwork(centrifugeConfig.AssetCurrencies, network);
+        const dropTokens = Object.keys(assessorContracts);
+
         centrifugeOracle.setAssetConfig(
           dropTokens.map((token) => tokensToWatch[token]),
-          dropTokens.map((token) => centrifugeConfig.AssessorContracts[token]),
-          dropTokens.map((token) => centrifugeConfig.AssetCurrencies[token])
+          dropTokens.map((token) => assessorContracts[token]),
+          dropTokens.map((token) => assetCurrencies[token])
         );
       }
 

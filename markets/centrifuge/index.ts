@@ -8,6 +8,7 @@ import { strategyDAI, strategyDROP } from './reservesConfigs';
 // ----------------
 
 const DAI = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+const KDAI = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD';
 
 export const CentrifugeConfig: ICentrifugeConfiguration = {
   ...CommonsConfig,
@@ -24,8 +25,10 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
     [eEthereumNetwork.hardhat]: {},
     [eEthereumNetwork.coverage]: {},
     [eEthereumNetwork.kovan]: {
-      DAI: '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD',
-      NS2DRP: '0x352Fee834a14800739DC72B219572d18618D9846',
+      DAI: KDAI,
+      NS2DRP: '0xe8fcCBf789736717b7a8d10a536147cD823e166E',
+      CF4DRP: '0xe8fcCBf789736717b7a8d10a536147cD823e166E',
+      FF1DRP: '0xe8fcCBf789736717b7a8d10a536147cD823e166E',
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
@@ -37,14 +40,38 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
     [eEthereumNetwork.tenderlyMain]: {},
   },
   AssessorContracts: {
-    NS2DRP: '0xdA0bA5Dd06C8BaeC53Fa8ae25Ad4f19088D6375b',
-    CF4DRP: '0x6aaf2EE5b2B62fb9E29E021a1bF3B381454d900a',
-    FF1DRP: '0x4e7D665FB7747747bd770CB35F604412249AE8bC',
+    [eEthereumNetwork.buidlerevm]: {},
+    [eEthereumNetwork.hardhat]: {},
+    [eEthereumNetwork.coverage]: {},
+    [eEthereumNetwork.kovan]: {
+      NS2DRP: '0x1E5bc41316B2f696C201dE2Df1059D8d9d98EB71',
+      CF4DRP: '0x1E5bc41316B2f696C201dE2Df1059D8d9d98EB71',
+      FF1DRP: '0x1E5bc41316B2f696C201dE2Df1059D8d9d98EB71',
+    },
+    [eEthereumNetwork.ropsten]: {},
+    [eEthereumNetwork.main]: {
+      NS2DRP: '0xdA0bA5Dd06C8BaeC53Fa8ae25Ad4f19088D6375b',
+      CF4DRP: '0x6aaf2EE5b2B62fb9E29E021a1bF3B381454d900a',
+      FF1DRP: '0x4e7D665FB7747747bd770CB35F604412249AE8bC',
+    },
+    [eEthereumNetwork.tenderlyMain]: {},
   },
   AssetCurrencies: {
-    NS2DRP: DAI,
-    CF4DRP: DAI,
-    FF1DRP: DAI,
+    [eEthereumNetwork.buidlerevm]: {},
+    [eEthereumNetwork.hardhat]: {},
+    [eEthereumNetwork.coverage]: {},
+    [eEthereumNetwork.kovan]: {
+      NS2DRP: KDAI,
+      CF4DRP: KDAI,
+      FF1DRP: KDAI,
+    },
+    [eEthereumNetwork.ropsten]: {},
+    [eEthereumNetwork.main]: {
+      NS2DRP: DAI,
+      CF4DRP: DAI,
+      FF1DRP: DAI,
+    },
+    [eEthereumNetwork.tenderlyMain]: {},
   },
 };
 
