@@ -21,7 +21,6 @@ import {
   ATokenFactory,
   ATokensAndRatesHelperFactory,
   AaveOracleFactory,
-  CentrifugeOracleFactory,
   DefaultReserveInterestRateStrategyFactory,
   DelegationAwareATokenFactory,
   InitializableAdminUpgradeabilityProxyFactory,
@@ -52,7 +51,6 @@ import {
   FlashLiquidationAdapterFactory,
   PermissionedVariableDebtTokenFactory,
   PermissionedStableDebtTokenFactory,
-  PermissionedLendingPoolFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -175,11 +173,9 @@ export const deployAaveLibraries = async (
   };
 };
 
-export const deployLendingPool = async (verify?: boolean, permissioned?: boolean) => {
+export const deployLendingPool = async (verify?: boolean) => {
   const libraries = await deployAaveLibraries(verify);
-  const lendingPoolImpl = await new (permissioned
-    ? PermissionedLendingPoolFactory
-    : LendingPoolFactory)(libraries, await getFirstSigner()).deploy();
+  const lendingPoolImpl = await new LendingPoolFactory(libraries, await getFirstSigner()).deploy();
   await insertContractAddressInDb(eContractid.LendingPoolImpl, lendingPoolImpl.address);
   return withSaveAndVerify(lendingPoolImpl, eContractid.LendingPool, [], verify);
 };
@@ -219,13 +215,6 @@ export const deployAaveOracle = async (
     verify
   );
 
-export const deployCentrifugeOracle = async (verify?: boolean) =>
-  withSaveAndVerify(
-    await new CentrifugeOracleFactory(await getFirstSigner()).deploy(),
-    eContractid.CentrifugeOracle,
-    [],
-    verify
-  );
 export const deployLendingPoolCollateralManager = async (verify?: boolean) => {
   const collateralManagerImpl = await new LendingPoolCollateralManagerFactory(
     await getFirstSigner()
@@ -518,7 +507,6 @@ export const deployMockTokens = async (config: PoolConfiguration, verify?: boole
   const configData = config.ReservesConfig;
 
   for (const tokenSymbol of Object.keys(configData)) {
-    console.log(`Deploying ${tokenSymbol}`);
     tokens[tokenSymbol] = await deployMintableERC20(
       [
         tokenSymbol,

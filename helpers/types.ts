@@ -38,7 +38,6 @@ export enum AavePools {
   proto = 'proto',
   matic = 'matic',
   amm = 'amm',
-  centrifuge = 'centrifuge',
 }
 
 export enum eContractid {
@@ -88,7 +87,6 @@ export enum eContractid {
   UniswapLiquiditySwapAdapter = 'UniswapLiquiditySwapAdapter',
   UniswapRepayAdapter = 'UniswapRepayAdapter',
   FlashLiquidationAdapter = 'FlashLiquidationAdapter',
-  CentrifugeOracle = 'CentrifugeOracle',
   PermissionManager = 'PermissionManager',
   PermissionedStableDebtToken = 'PermissionedStableDebtToken',
   PermissionedVariableDebtToken = 'PermissionedVariableDebtToken',
@@ -244,9 +242,6 @@ export interface iAssetBase<T> {
   WMATIC: T;
   STAKE: T;
   xSUSHI: T;
-  NS2DRP: T;
-  CF4DRP: T;
-  FF1DRP: T;
 }
 
 export type iAssetsWithoutETH<T> = Omit<iAssetBase<T>, 'ETH'>;
@@ -315,11 +310,6 @@ export type iXDAIPoolAssets<T> = Pick<
   'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'STAKE'
 >;
 
-export type iCentrifugePoolAssets<T> = Pick<
-  iAssetsWithoutUSD<T>,
-  'DAI' | 'NS2DRP' | 'CF4DRP' | 'FF1DRP'
->;
-
 export type iMultiPoolsAssets<T> = iAssetCommon<T> | iAavePoolAssets<T>;
 
 export type iAavePoolTokens<T> = Omit<iAavePoolAssets<T>, 'ETH'>;
@@ -367,9 +357,6 @@ export enum TokenContractId {
   WMATIC = 'WMATIC',
   STAKE = 'STAKE',
   xSUSHI = 'xSUSHI',
-  NS2DRP = 'NS2DRP',
-  CF4DRP = 'CF4DRP',
-  FF1DRP = 'FF1DRP',
 }
 
 export interface IReserveParams extends IReserveBorrowParams, IReserveCollateralParams {
@@ -444,7 +431,6 @@ export interface iParamsPerPool<T> {
   [AavePools.proto]: T;
   [AavePools.matic]: T;
   [AavePools.amm]: T;
-  [AavePools.centrifuge]: T;
 }
 
 export interface iBasicDistributionParams {
@@ -534,17 +520,8 @@ export interface IXDAIConfiguration extends ICommonConfiguration {
   ReservesConfig: iXDAIPoolAssets<IReserveParams>;
 }
 
-export interface ICentrifugeConfiguration extends ICommonConfiguration {
-  ReservesConfig: iCentrifugePoolAssets<IReserveParams>;
-  AssessorContracts: iParamsPerNetwork<ITokenAddress>;
-  AssetCurrencies: iParamsPerNetwork<ITokenAddress>;
-}
-
 export interface ITokenAddress {
   [token: string]: tEthereumAddress;
 }
 
-export type PoolConfiguration =
-  | ICommonConfiguration
-  | IAaveConfiguration
-  | ICentrifugeConfiguration;
+export type PoolConfiguration = ICommonConfiguration | IAaveConfiguration;
