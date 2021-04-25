@@ -1244,7 +1244,9 @@ export const calcExpectedInterestRates = (
   ];
 
   let stableBorrowRate: BigNumber = marketStableRate;
-  let variableBorrowRate: BigNumber = new BigNumber(reserveConfiguration.strategy.baseVariableBorrowRate);
+  let variableBorrowRate: BigNumber = new BigNumber(
+    reserveConfiguration.strategy.baseVariableBorrowRate
+  );
 
   const optimalRate = new BigNumber(reserveConfiguration.strategy.optimalUtilizationRate);
   const excessRate = new BigNumber(RAY).minus(optimalRate);
@@ -1256,13 +1258,17 @@ export const calcExpectedInterestRates = (
     stableBorrowRate = stableBorrowRate
       .plus(reserveConfiguration.strategy.stableRateSlope1)
       .plus(
-        new BigNumber(reserveConfiguration.strategy.stableRateSlope2).rayMul(excessUtilizationRateRatio)
+        new BigNumber(reserveConfiguration.strategy.stableRateSlope2).rayMul(
+          excessUtilizationRateRatio
+        )
       );
 
     variableBorrowRate = variableBorrowRate
       .plus(reserveConfiguration.strategy.variableRateSlope1)
       .plus(
-        new BigNumber(reserveConfiguration.strategy.variableRateSlope2).rayMul(excessUtilizationRateRatio)
+        new BigNumber(reserveConfiguration.strategy.variableRateSlope2).rayMul(
+          excessUtilizationRateRatio
+        )
       );
   } else {
     stableBorrowRate = stableBorrowRate.plus(
