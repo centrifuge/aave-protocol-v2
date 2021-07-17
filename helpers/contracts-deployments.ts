@@ -39,7 +39,6 @@ import {
   MockStableDebtTokenFactory,
   MockVariableDebtTokenFactory,
   MockUniswapV2Router02Factory,
-  PermissionedLendingPoolFactory,
   PriceOracleFactory,
   ReserveLogicFactory,
   SelfdestructTransferFactory,
@@ -53,18 +52,36 @@ import {
   FlashLiquidationAdapterFactory,
   PermissionedVariableDebtTokenFactory,
   PermissionedStableDebtTokenFactory,
+  PermissionedLendingPoolFactory,
+  PermissionedWETHGatewayFactory,
 } from '../types';
 import {
   withSaveAndVerify,
   registerContractInJsonDb,
   linkBytecode,
   insertContractAddressInDb,
+  deployContract,
+  verifyContract,
 } from './contracts-helpers';
 import { StableAndVariableTokensHelperFactory } from '../types/StableAndVariableTokensHelperFactory';
 import { MintableDelegationERC20 } from '../types/MintableDelegationERC20';
 import { readArtifact as buidlerReadArtifact } from '@nomiclabs/buidler/plugins';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { LendingPoolLibraryAddresses } from '../types/LendingPoolFactory';
+import { UiPoolDataProvider } from '../types';
+
+export const deployUiPoolDataProvider = async (
+  [incentivesController, aaveOracle]: [tEthereumAddress, tEthereumAddress],
+  verify?: boolean
+) => {
+  const id = eContractid.UiPoolDataProvider;
+  const args: string[] = [incentivesController, aaveOracle];
+  const instance = await deployContract<UiPoolDataProvider>(id, args);
+  if (verify) {
+    await verifyContract(id, instance, args);
+  }
+  return instance;
+};
 
 const readArtifact = async (id: string) => {
   if (DRE.network.name === eEthereumNetwork.buidlerevm) {
@@ -125,7 +142,9 @@ export const deployGenericLogic = async (reserveLogic: Contract, verify?: boolea
     linkedGenericLogicByteCode
   );
 
-  const genericLogic = await (await genericLogicFactory.deploy()).deployed();
+  const genericLogic = await (
+    await genericLogicFactory.connect(await getFirstSigner()).deploy()
+  ).deployed();
   return withSaveAndVerify(genericLogic, eContractid.GenericLogic, [], verify);
 };
 
@@ -146,7 +165,9 @@ export const deployValidationLogic = async (
     linkedValidationLogicByteCode
   );
 
-  const validationLogic = await (await validationLogicFactory.deploy()).deployed();
+  const validationLogic = await (
+    await validationLogicFactory.connect(await getFirstSigner()).deploy()
+  ).deployed();
 
   return withSaveAndVerify(validationLogic, eContractid.ValidationLogic, [], verify);
 };
@@ -175,13 +196,25 @@ export const deployAaveLibraries = async (
   };
 };
 
-export const deployLendingPool = async (verify?: boolean, permissioned?: boolean) => {
+export const deployLendingPool = async (verify?: boolean, lendingPoolImpl?: eContractid) => {
   const libraries = await deployAaveLibraries(verify);
-  const lendingPoolImpl = await new (permissioned
-    ? PermissionedLendingPoolFactory
-    : LendingPoolFactory)(libraries, await getFirstSigner()).deploy();
-  await insertContractAddressInDb(eContractid.LendingPoolImpl, lendingPoolImpl.address);
-  return withSaveAndVerify(lendingPoolImpl, eContractid.LendingPool, [], verify);
+
+  let instance;
+  switch (lendingPoolImpl) {
+    case eContractid.PermissionedLendingPool:
+      instance = await new PermissionedLendingPoolFactory(
+        libraries,
+        await getFirstSigner()
+      ).deploy();
+      break;
+    case eContractid.LendingPool:
+    default:
+      instance = await new LendingPoolFactory(libraries, await getFirstSigner()).deploy();
+  }
+  await instance.deployTransaction.wait();
+
+  await insertContractAddressInDb(eContractid.LendingPoolImpl, instance.address);
+  return withSaveAndVerify(instance, eContractid.LendingPool, [], verify);
 };
 
 export const deployPriceOracle = async (verify?: boolean) =>
@@ -343,15 +376,13 @@ export const deployStableDebtTokenByType = async (type: string) => {
     return deployGenericStableDebtToken();
   }
 
-  console.log('Deploying instance of ', type);
-
   switch (type) {
     case eContractid.StableDebtToken:
       return deployGenericStableDebtToken();
     case eContractid.PermissionedStableDebtToken:
       return deployPermissionedStableDebtToken();
     default:
-      console.log('[stable]Cant find token type ', type);
+      console.log('Cant find the debt token type ', type);
       throw 'Invalid debt token type';
   }
 };
@@ -551,6 +582,14 @@ export const deployWETHGateway = async (args: [tEthereumAddress], verify?: boole
   withSaveAndVerify(
     await new WETHGatewayFactory(await getFirstSigner()).deploy(...args),
     eContractid.WETHGateway,
+    args,
+    verify
+  );
+
+export const deployPermissionedWETHGateway = async (args: [tEthereumAddress], verify?: boolean) =>
+  withSaveAndVerify(
+    await new PermissionedWETHGatewayFactory(await getFirstSigner()).deploy(...args),
+    eContractid.PermissionedWETHGateway,
     args,
     verify
   );

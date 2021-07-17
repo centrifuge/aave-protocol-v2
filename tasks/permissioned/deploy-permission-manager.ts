@@ -1,7 +1,7 @@
 import { task } from 'hardhat/config';
 
 import { PermissionManagerFactory } from '../../types';
-import { verifyContract } from '../../helpers/etherscan-verification';
+import { verifyContract } from '../../helpers/contracts-helpers';
 import { eContractid } from '../../helpers/types';
 import { insertContractAddressInDb } from '../../helpers/contracts-helpers';
 import { getLendingPoolAddressesProvider } from '../../helpers/contracts-getters';
@@ -20,14 +20,16 @@ task(`deploy-permission-manager`, `Deploys the PermissionManager contract`)
     console.log(`\n- PermissionManager deployment`);
 
     console.log(`\tDeploying PermissionManager implementation ...`);
-    const permissionManagerFactory = await new PermissionManagerFactory(
+    const permissionManagerInstance = await new PermissionManagerFactory(
       await localBRE.ethers.provider.getSigner()
     ).deploy();
 
-    await permissionManagerFactory.deployTransaction.wait();
+    await permissionManagerInstance.deployTransaction.wait();
 
-    console.log('Permission manager address', permissionManagerFactory.address);
-    // await verifyContract(permissionManagerFactory.address, []);
+    console.log('Permission manager address', permissionManagerInstance.address);
+    if (verify) {
+      await verifyContract(eContractid.PermissionManager, permissionManagerInstance, []);
+    }
 
     // register the permission manager in the addresses provider
     const addressesProvider = await getLendingPoolAddressesProvider();
@@ -36,13 +38,13 @@ task(`deploy-permission-manager`, `Deploys the PermissionManager contract`)
     );
 
     await waitForTx(
-      await addressesProvider.setAddress(permissionManagerHash, permissionManagerFactory.address)
+      await addressesProvider.setAddress(permissionManagerHash, permissionManagerInstance.address)
     );
 
     // store the permission manager contract in the DB
     await insertContractAddressInDb(
       eContractid.PermissionManager,
-      permissionManagerFactory.address
+      permissionManagerInstance.address
     );
 
     console.log(`\tFinished PermissionManager implementation deployment`);

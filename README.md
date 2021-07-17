@@ -1,4 +1,5 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Build pass](https://github.com/AAVE/protocol-v2/actions/workflows/node.js.yml/badge.svg)](https://github.com/aave/protocol-v2/actions/workflows/node.js.yml)
 ```
         .///.                .///.     //.            .//  `/////////////-
        `++:++`              .++:++`    :++`          `++:  `++:......---.`
@@ -135,6 +136,80 @@ docker-compose exec contracts-env bash
 
 # A new Bash terminal is prompted, connected to the container
 npm run aave:kovan:full:migration
+```
+
+### Kovan Aave Pro Deployment
+
+You can deploy aave-pro with default configuration on kovan.
+
+In `markets/aave-pro/commons.ts` make following changes:
+
+- Configure `ProviderRegistryOwner` and `ReserveFactorTreasuryAddress`
+
+  Set owner to your deployer address with kovan funds. 
+
+  Set `ReserveFactorTreasuryAddress` to your team's wallet
+
+  **Notet:** Script uses first address generated, from `MNEMONIC` provided in `.env` file, as the deployer.
+
+  ```
+  ProviderRegistryOwner: {
+    [eEthereumNetwork.kovan]: '0xYourDeployerAddress',
+    // Other network settings. You can leave them empty or same
+  },
+
+  ReserveFactorTreasuryAddress: {
+    [eEthereumNetwork.kovan]: '0xYourDeployerAddress,
+    // Other network settings. You can leave them empty or same
+  },
+  ```
+
+- Configure to deploy new `ProviderRegistry` and `LendingPoolCollateralManager`
+
+  Set registry and collateral manager address to empty string to deploy new registry.
+
+  ```
+  ProviderRegistry: {
+    [eEthereumNetwork.kovan]: '',
+    // Other network settings. You can leave them empty or same
+  },
+  LendingPoolCollateralManager: {
+    [eEthereumNetwork.kovan]: '',
+  }
+  ```
+
+- Configure to deploy/initialize `PermissionedWethGateWay`
+
+  Set gateway address to empty string to deploy new.
+
+  ```
+  WethGateway: {
+    [eEthereumNetwork.kovan]: '',
+    // Other network settings. You can leave them empty or same
+  },
+  ```
+
+**Note:** To configure aave pro market you can update `markets/aave-pro/`
+
+#### Deploy Market
+
+**Using Docker**
+
+```
+# In one terminal
+docker-compose up
+
+# Open another tab or terminal
+docker-compose exec contracts-env bash
+
+# A new Bash terminal is prompted, connected to the container
+npm run pro:kovan:full:migration
+```
+
+**Without Docker**
+
+```
+npm run pro:kovan:full:migration
 ```
 
 ### Mainnet fork deployment

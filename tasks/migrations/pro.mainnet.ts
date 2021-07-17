@@ -32,8 +32,8 @@ task('pro:mainnet', 'Deploy development enviroment')
     console.log('5. Deploy Data Provider');
     await DRE.run('full:data-provider', { pool: POOL_NAME });
 
-    console.log('6. Deploy WETH Gateway');
-    await DRE.run('full-deploy-weth-gateway', { pool: POOL_NAME });
+    console.log('6. Deploy Permissioned WETH Gateway');
+    await DRE.run('full-deploy-permissioned-weth-gateway', { pool: POOL_NAME });
 
     console.log('7. Initialize lending pool');
     await DRE.run('full:initialize-lending-pool', { pool: POOL_NAME });
@@ -48,8 +48,8 @@ task('pro:mainnet', 'Deploy development enviroment')
     }
 
     if (usingTenderly()) {
-      const postDeployHead = DRE.tenderlyRPC.getHead();
-      const postDeployFork = DRE.tenderlyRPC.getFork();
+      const postDeployHead = DRE.tenderlyNetwork.getHead();
+      const postDeployFork = DRE.tenderlyNetwork.getFork();
       console.log('Tenderly Info');
       console.log('- Head', postDeployHead);
       console.log('- Fork', postDeployFork);

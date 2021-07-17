@@ -16,11 +16,10 @@ import {
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { loadPoolConfig, ConfigNames } from '../../helpers/configuration';
 
-task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
+task('full:deploy-lending-pool', 'Deploy lending pool for dev environment')
   .addFlag('verify', 'Verify contracts at Etherscan')
-  .addFlag('permissioned', 'Deploy the permissioned lending pool')
   .addParam('pool', `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
-  .setAction(async ({ verify, permissioned, pool }, DRE: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ verify, pool }, DRE: HardhatRuntimeEnvironment) => {
     try {
       await DRE.run('set-DRE');
       const network = <eNetwork>DRE.network.name;
@@ -33,8 +32,9 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
       let lendingPoolImplAddress = getParamPerNetwork(LendingPool, network);
       if (!notFalsyOrZeroAddress(lendingPoolImplAddress)) {
         console.log('\tDeploying new lending pool implementation & libraries...');
-        const lendingPoolImpl = await deployLendingPool(verify, permissioned);
+        const lendingPoolImpl = await deployLendingPool(verify, poolConfig.LendingPoolImpl);
         lendingPoolImplAddress = lendingPoolImpl.address;
+        await waitForTx(await lendingPoolImpl.initialize(addressesProvider.address));
       }
       console.log('\tSetting lending pool implementation with address:', lendingPoolImplAddress);
       // Set lending pool impl to Address provider
@@ -82,7 +82,7 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
       if (DRE.network.name.includes('tenderly')) {
         const transactionLink = `https://dashboard.tenderly.co/${DRE.config.tenderly.username}/${
           DRE.config.tenderly.project
-        }/fork/${DRE.tenderlyRPC.getFork()}/simulation/${DRE.tenderlyRPC.getHead()}`;
+        }/fork/${DRE.tenderlyNetwork.getFork()}/simulation/${DRE.tenderlyNetwork.getHead()}`;
         console.error('Check tx error:', transactionLink);
       }
       throw error;

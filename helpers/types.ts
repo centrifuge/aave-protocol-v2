@@ -92,6 +92,8 @@ export enum eContractid {
   PermissionManager = 'PermissionManager',
   PermissionedStableDebtToken = 'PermissionedStableDebtToken',
   PermissionedVariableDebtToken = 'PermissionedVariableDebtToken',
+  PermissionedLendingPool = 'PermissionedLendingPool',
+  PermissionedWETHGateway = 'PermissionedWETHGateway',
 }
 
 /*
@@ -278,7 +280,7 @@ export type iAavePoolAssets<T> = Pick<
   | 'xSUSHI'
 >;
 
-export type iAaveProPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'USDT' | 'WBTC' | 'WETH'>;
+export type iAaveProPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' | 'WETH' | 'AAVE'>;
 
 export type iCentrifugePoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
@@ -312,7 +314,7 @@ export type iLpPoolAssets<T> = Pick<
 
 export type iMaticPoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
-  'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'WMATIC'
+  'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'WMATIC' | 'AAVE'
 >;
 
 export type iXDAIPoolAssets<T> = Pick<
@@ -485,6 +487,7 @@ export interface ILendingRate {
 
 export interface ICommonConfiguration {
   MarketId: string;
+  LendingPoolImpl?: eContractid;
   ATokenNamePrefix: string;
   StableDebtTokenNamePrefix: string;
   VariableDebtTokenNamePrefix: string;
@@ -511,8 +514,10 @@ export interface ICommonConfiguration {
   ReservesConfig: iMultiPoolsAssets<IReserveParams>;
   ATokenDomainSeparator: iParamsPerNetwork<string>;
   WETH: iParamsPerNetwork<tEthereumAddress>;
+  WrappedNativeToken: iParamsPerNetwork<tEthereumAddress>;
   WethGateway: iParamsPerNetwork<tEthereumAddress>;
   ReserveFactorTreasuryAddress: iParamsPerNetwork<tEthereumAddress>;
+  IncentivesController: iParamsPerNetwork<tEthereumAddress>;
 }
 
 export interface IAaveConfiguration extends ICommonConfiguration {

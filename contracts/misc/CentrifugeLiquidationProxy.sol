@@ -15,6 +15,20 @@ contract CentrifugeLiquidationProxy is ILendingPoolCollateralManager, Ownable {
     collateralManager = _collateralManager;
   }
 
+  function seize(
+    address user,
+    address[] calldata assets,
+    address to
+  ) external override returns (uint256, string memory) {
+    for (uint256 i = 0; i < assets.length; i++) {
+      require(
+        IRestrictedToken(assets[i]).hasMember(msg.sender) == true,
+        'sender is not a member for one of the assets'
+      );
+    }
+    ILendingPoolCollateralManager(collateralManager).seize(user, assets, to);
+  }
+
   function liquidationCall(
     address collateralAsset,
     address debtAsset,
@@ -24,7 +38,7 @@ contract CentrifugeLiquidationProxy is ILendingPoolCollateralManager, Ownable {
   ) external override returns (uint256, string memory) {
     require(
       IRestrictedToken(collateralAsset).hasMember(msg.sender) == true,
-      'sender is not a member for this token'
+      'sender is not a member for this asset'
     );
     ILendingPoolCollateralManager(collateralManager).liquidationCall(
       collateralAsset,

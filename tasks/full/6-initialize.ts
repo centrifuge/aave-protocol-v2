@@ -12,7 +12,7 @@ import {
   getWethAddress,
   getTreasuryAddress,
 } from '../../helpers/configuration';
-import { getWETHGateway } from '../../helpers/contracts-getters';
+import { getPermissionedWETHGateway, getWETHGateway } from '../../helpers/contracts-getters';
 import { eNetwork, ICommonConfiguration } from '../../helpers/types';
 import { notFalsyOrZeroAddress, waitForTx } from '../../helpers/misc-utils';
 import { initReservesByHelper, configureReservesByHelper } from '../../helpers/init-helpers';
@@ -40,10 +40,11 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
         ReservesConfig,
         LendingPoolCollateralManager,
         WethGateway,
+        IncentivesController,
       } = poolConfig as ICommonConfiguration;
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
-
+      const incentivesController = await getParamPerNetwork(IncentivesController, network);
       const addressesProvider = await getLendingPoolAddressesProvider();
 
       const testHelpers = await getAaveProtocolDataProvider();
@@ -64,7 +65,7 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
         SymbolPrefix,
         admin,
         treasuryAddress,
-        ZERO_ADDRESS,
+        incentivesController,
         verify
       );
       await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
@@ -87,15 +88,32 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
         await addressesProvider.setLendingPoolCollateralManager(collateralManagerAddress)
       );
 
+      console.log(
+        '\tSetting AaveProtocolDataProvider at AddressesProvider at id: 0x01',
+        collateralManagerAddress
+      );
+      const aaveProtocolDataProvider = await getAaveProtocolDataProvider();
+      await waitForTx(
+        await addressesProvider.setAddress(
+          '0x0100000000000000000000000000000000000000000000000000000000000000',
+          aaveProtocolDataProvider.address
+        )
+      );
+
       await deployWalletBalancerProvider(verify);
 
-      // const lendingPoolAddress = await addressesProvider.getLendingPool();
+      const lendingPoolAddress = await addressesProvider.getLendingPool();
 
-      // let gateWay = getParamPerNetwork(WethGateway, network);
-      // if (!notFalsyOrZeroAddress(gateWay)) {
-      //   gateWay = (await getWETHGateway()).address;
-      // }
-      // await authorizeWETHGateway(gateWay, lendingPoolAddress);
+      let gateWay = getParamPerNetwork(WethGateway, network);
+      if (!notFalsyOrZeroAddress(gateWay)) {
+        if (pool === ConfigNames.AavePro) {
+          gateWay = (await getPermissionedWETHGateway()).address;
+        } else {
+          gateWay = (await getWETHGateway()).address;
+        }
+      }
+      console.log('GATEWAY', gateWay);
+      await authorizeWETHGateway(gateWay, lendingPoolAddress);
     } catch (err) {
       console.error(err);
       exit(1);
