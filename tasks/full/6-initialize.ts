@@ -104,6 +104,9 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
 
       const lendingPoolAddress = await addressesProvider.getLendingPool();
 
+      // TODO: this should probably be disabled somewhere else
+      if (pool === ConfigNames.Centrifuge) return;
+
       let gateWay = getParamPerNetwork(WethGateway, network);
       if (!notFalsyOrZeroAddress(gateWay)) {
         if (pool === ConfigNames.AavePro) {

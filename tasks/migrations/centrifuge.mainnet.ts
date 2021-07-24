@@ -19,7 +19,7 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log('Migration started\n');
 
     console.log('1. Deploy address provider');
-    await DRE.run('full:deploy-address-provider', { pool: POOL_NAME });
+    await DRE.run('full:deploy-address-provider', { pool: POOL_NAME, skipRegistry: true });
 
     console.log('2. Deploy permissions manager');
     await DRE.run('deploy-permission-manager', { pool: POOL_NAME });
@@ -55,6 +55,8 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log('\nFinished migrations');
     printContracts();
 
+    console.log('block', DRE.ethers.provider.blockNumber);
+
     const lendingPool = await contractGetters.getLendingPool();
     const permissionManager = await contractGetters.getPermissionsManager();
     const owner = await contractGetters.getFirstSigner();
@@ -67,11 +69,24 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     const aNS2DRP = (await lendingPool.getReserveData(NS2DRP.address)).aTokenAddress;
 
     // Give permissions
-    const whale = '0xB1AdceddB2941033a090dD166a462fe1c2029484';
-    const dropHolder = '0x648d7638C9D2f8aA5a08B551295a92E4Bc02d973';
-    const kovanAdmin = '0x0A735602a357802f553113F5831FE2fbf2F0E2e0';
-    permissionManager.connect(owner).addPermissionAdmins([await owner.getAddress(), kovanAdmin]);
-    permissionManager
+    const network = (await DRE.ethers.provider.getNetwork()).name;
+    console.log(`Network: ${network}`);
+    const whale =
+      network === 'kovan'
+        ? '0xf92afb6aa0b35a664b4844728bede737a78b89bc'
+        : '0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503';
+    const dropHolder =
+      network === 'kovan'
+        ? '0x0A735602a357802f553113F5831FE2fbf2F0E2e0'
+        : '0x648d7638C9D2f8aA5a08B551295a92E4Bc02d973';
+    const kovanAdmin =
+      network === 'kovan'
+        ? '0x0A735602a357802f553113F5831FE2fbf2F0E2e0'
+        : '0x0A735602a357802f553113F5831FE2fbf2F0E2e0';
+    await permissionManager
+      .connect(owner)
+      .addPermissionAdmins([await owner.getAddress(), kovanAdmin]);
+    await permissionManager
       .connect(owner)
       .addPermissions([DEPOSITOR, DEPOSITOR, BORROWER], [whale, dropHolder, dropHolder]);
 
