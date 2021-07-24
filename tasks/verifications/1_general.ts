@@ -86,10 +86,13 @@ task('verify:general', 'Verify contracts at Etherscan')
       const dataProvider = await getAaveProtocolDataProvider();
       const walletProvider = await getWalletProvider();
 
-      const wethGatewayAddress = getParamPerNetwork(WethGateway, network);
-      const wethGateway = notFalsyOrZeroAddress(wethGatewayAddress)
-        ? await getWETHGateway(wethGatewayAddress)
-        : await getWETHGateway();
+      let wethGateway;
+      if (pool !== ConfigNames.Centrifuge) {
+        const wethGatewayAddress = getParamPerNetwork(WethGateway, network);
+        wethGateway = notFalsyOrZeroAddress(wethGatewayAddress)
+          ? await getWETHGateway(wethGatewayAddress)
+          : await getWETHGateway();
+      }
 
       // Address Provider
       console.log('\n- Verifying address provider...\n');
@@ -129,11 +132,13 @@ task('verify:general', 'Verify contracts at Etherscan')
       console.log('\n- Verifying  Wallet Balance Provider...\n');
       await verifyContract(eContractid.WalletBalanceProvider, walletProvider, []);
 
-      // WETHGateway
-      console.log('\n- Verifying  WETHGateway...\n');
-      await verifyContract(eContractid.WETHGateway, wethGateway, [
-        await getWethAddress(poolConfig),
-      ]);
+      if (pool !== ConfigNames.Centrifuge) {
+        // WETHGateway
+        console.log('\n- Verifying  WETHGateway...\n');
+        await verifyContract(eContractid.WETHGateway, wethGateway, [
+          await getWethAddress(poolConfig),
+        ]);
+      }
     }
     // Lending Pool proxy
     console.log('\n- Verifying  Lending Pool Proxy...\n');

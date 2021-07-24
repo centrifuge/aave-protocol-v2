@@ -92,7 +92,7 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       }
 
       if (poolConfig.MarketId === 'Centrifuge genesis market') {
-        centrifugeOracle.setAaveOracle(aaveOracle.address);
+        await waitForTx(await centrifugeOracle.setAaveOracle(aaveOracle.address));
       }
 
       if (notFalsyOrZeroAddress(lendingRateOracleAddress)) {

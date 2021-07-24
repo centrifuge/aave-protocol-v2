@@ -7,7 +7,8 @@ import * as contractGetters from '../../helpers/contracts-getters';
 
 task('centrifuge:mainnet', 'Deploy development enviroment')
   .addFlag('verify', 'Verify contracts at Etherscan')
-  .setAction(async ({ verify }, DRE) => {
+  .addFlag('skipRegistry', 'Skip addresses provider registration at Addresses Provider Registry')
+  .setAction(async ({ verify, skipRegistry }, DRE) => {
     const POOL_NAME = ConfigNames.Centrifuge;
     await DRE.run('set-DRE');
 
@@ -19,29 +20,29 @@ task('centrifuge:mainnet', 'Deploy development enviroment')
     console.log('Migration started\n');
 
     console.log('1. Deploy address provider');
-    await DRE.run('full:deploy-address-provider', { pool: POOL_NAME, skipRegistry: true });
+    await DRE.run('full:deploy-address-provider', { verify, pool: POOL_NAME, skipRegistry });
 
     console.log('2. Deploy permissions manager');
-    await DRE.run('deploy-permission-manager', { pool: POOL_NAME });
+    await DRE.run('deploy-permission-manager', { verify, pool: POOL_NAME });
 
     console.log('3. Deploy lending pool');
-    await DRE.run('full:deploy-lending-pool', { pool: POOL_NAME, permissioned: true });
+    await DRE.run('full:deploy-lending-pool', { verify, pool: POOL_NAME, permissioned: true });
 
     console.log('4. Deploy oracles');
-    await DRE.run('full:deploy-oracles', { pool: POOL_NAME });
+    await DRE.run('full:deploy-oracles', { verify, pool: POOL_NAME });
 
     console.log('5. Deploy Data Provider');
-    await DRE.run('full:data-provider', { pool: POOL_NAME });
+    await DRE.run('full:data-provider', { verify, pool: POOL_NAME });
 
     console.log('6. Initialize lending pool');
-    await DRE.run('full:initialize-lending-pool', { pool: POOL_NAME });
+    await DRE.run('full:initialize-lending-pool', { verify, pool: POOL_NAME });
 
     if (verify) {
       printContracts();
-      console.log('6. Verifying contracts');
+      console.log('7. Verifying contracts');
       await DRE.run('verify:general', { all: true, pool: POOL_NAME });
 
-      console.log('7. Verifying aTokens and debtTokens');
+      console.log('8. Verifying aTokens and debtTokens');
       await DRE.run('verify:tokens', { pool: POOL_NAME });
     }
 

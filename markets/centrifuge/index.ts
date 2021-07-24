@@ -27,8 +27,8 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
     [eEthereumNetwork.kovan]: {
       DAI: KDAI,
       NS2DRP: '0xe8fcCBf789736717b7a8d10a536147cD823e166E',
-      CF4DRP: '0xe8fcCBf789736717b7a8d10a536147cD823e166E',
-      FF1DRP: '0xe8fcCBf789736717b7a8d10a536147cD823e166E',
+      CF4DRP: '0x931C3Ff1F5aC377137d3AaFD80F601BD76cE106e',
+      FF1DRP: '0x0f763b4d5032f792fA39eE54BE5422592eC8329B',
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
@@ -45,8 +45,8 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
     [eEthereumNetwork.coverage]: {},
     [eEthereumNetwork.kovan]: {
       NS2DRP: '0x1E5bc41316B2f696C201dE2Df1059D8d9d98EB71',
-      CF4DRP: '0x1E5bc41316B2f696C201dE2Df1059D8d9d98EB71',
-      FF1DRP: '0x1E5bc41316B2f696C201dE2Df1059D8d9d98EB71',
+      CF4DRP: '0xe5B1C9DB5316350e1501ADe417cBe44d2D6A04Cd',
+      FF1DRP: '0xac7582C83bb4730bB3F9537A20f73B380B59787C',
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
