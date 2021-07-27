@@ -71,10 +71,12 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
         const assetCurrencies = await getParamPerNetwork(centrifugeConfig.AssetCurrencies, network);
         const dropTokens = Object.keys(assessorContracts);
 
-        centrifugeOracle.setAssetConfig(
-          dropTokens.map((token) => tokensToWatch[token]),
-          dropTokens.map((token) => assessorContracts[token]),
-          dropTokens.map((token) => assetCurrencies[token])
+        await waitForTx(
+          await centrifugeOracle.setAssetConfig(
+            dropTokens.map((token) => tokensToWatch[token]),
+            dropTokens.map((token) => assessorContracts[token]),
+            dropTokens.map((token) => assetCurrencies[token])
+          )
         );
       }
 
