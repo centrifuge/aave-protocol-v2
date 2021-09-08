@@ -8,8 +8,8 @@ import {
 } from './types';
 import { getEthersSignersAddresses, getParamPerPool } from './contracts-helpers';
 import AaveConfig from '../markets/aave';
-import AaveProConfig from '../markets/aave-pro';
 import CentrifugeConfig from '../markets/centrifuge';
+import AaveArcConfig from '../markets/aave-arc';
 import MaticConfig from '../markets/matic';
 import AmmConfig from '../markets/amm';
 import { CommonsConfig } from '../markets/aave/commons';
@@ -23,8 +23,8 @@ export enum ConfigNames {
   Aave = 'Aave',
   Matic = 'Matic',
   Amm = 'Amm',
-  AavePro = 'AavePro',
   Centrifuge = 'Centrifuge',
+  Arc = 'Arc',
 }
 
 export const loadPoolConfig = (configName: ConfigNames): PoolConfiguration => {
@@ -37,10 +37,10 @@ export const loadPoolConfig = (configName: ConfigNames): PoolConfiguration => {
       return AmmConfig;
     case ConfigNames.Commons:
       return CommonsConfig;
-    case ConfigNames.AavePro:
-      return AaveProConfig;
     case ConfigNames.Centrifuge:
       return CentrifugeConfig;
+    case ConfigNames.Arc:
+      return AaveArcConfig;
     default:
       throw new Error(`Unsupported pool configuration: ${Object.values(ConfigNames)}`);
   }
@@ -63,6 +63,9 @@ export const getReservesConfigByPool = (pool: AavePools): iMultiPoolsAssets<IRes
       },
       [AavePools.centrifuge]: {
         ...CentrifugeConfig.ReservesConfig,
+      },
+      [AavePools.arc]: {
+        ...AaveArcConfig.ReservesConfig,
       },
     },
     pool

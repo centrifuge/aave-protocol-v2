@@ -39,6 +39,7 @@ export enum AavePools {
   matic = 'matic',
   amm = 'amm',
   centrifuge = 'centrifuge',
+  arc = 'arc',
 }
 
 export enum eContractid {
@@ -280,7 +281,7 @@ export type iAavePoolAssets<T> = Pick<
   | 'xSUSHI'
 >;
 
-export type iAaveProPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' | 'WETH' | 'AAVE'>;
+export type iAaveArcPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' | 'WETH' | 'AAVE'>;
 
 export type iCentrifugePoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
@@ -447,6 +448,7 @@ export interface iParamsPerPool<T> {
   [AavePools.matic]: T;
   [AavePools.amm]: T;
   [AavePools.centrifuge]: T;
+  [AavePools.arc]: T;
 }
 
 export interface iBasicDistributionParams {
@@ -524,8 +526,8 @@ export interface IAaveConfiguration extends ICommonConfiguration {
   ReservesConfig: iAavePoolAssets<IReserveParams>;
 }
 
-export interface IAaveProConfiguration extends ICommonConfiguration {
-  ReservesConfig: iAaveProPoolAssets<IReserveParams>;
+export interface IAaveArcConfiguration extends ICommonConfiguration {
+  ReservesConfig: iAaveArcPoolAssets<IReserveParams>;
 }
 export interface IAmmConfiguration extends ICommonConfiguration {
   ReservesConfig: iLpPoolAssets<IReserveParams>;

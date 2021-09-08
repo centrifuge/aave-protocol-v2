@@ -181,7 +181,7 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
 };
 
 export const getParamPerPool = <T>(
-  { proto, amm, matic, centrifuge }: iParamsPerPool<T>,
+  { proto, amm, matic, arc, centrifuge }: iParamsPerPool<T>,
   pool: AavePools
 ) => {
   switch (pool) {
@@ -193,6 +193,8 @@ export const getParamPerPool = <T>(
       return matic;
     case AavePools.centrifuge:
       return centrifuge;
+    case AavePools.arc:
+      return arc;
     default:
       return proto;
   }
