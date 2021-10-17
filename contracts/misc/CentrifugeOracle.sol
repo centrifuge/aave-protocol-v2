@@ -58,13 +58,9 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   function getAssetPrice(address asset) public view override returns (uint256) {
     ICentrifugeAssessor source = assetsSources[asset];
     address currency = assetsCurrencies[asset];
+    require(address(source) != address(0) && currency != address(0), 'invalid-asset');
 
-    uint256 daiPrice = IPriceOracleGetter(aaveOracle).getAssetPrice(currency);
-
-    if (address(source) == address(0)) {
-      return 1 ether;
-    } else {
-      return source.calcSeniorTokenPrice().mul(daiPrice).div(10**27);
-    }
+    uint256 currencyPrice = IPriceOracleGetter(aaveOracle).getAssetPrice(currency);
+    return source.calcSeniorTokenPrice().mul(currencyPrice).div(10**27);
   }
 }
