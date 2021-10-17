@@ -48,7 +48,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.hardhat]: undefined,
     [eEthereumNetwork.kovan]: undefined,
     [eEthereumNetwork.ropsten]: undefined,
-    [eEthereumNetwork.main]: undefined,
+    [eEthereumNetwork.main]: '0xf3BceA7494D8f3ac21585CA4b0E52aa175c24C25',
     [eEthereumNetwork.tenderlyMain]: undefined,
   },
   PoolAdminIndex: 0,
@@ -58,7 +58,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.buidlerevm]: undefined,
     [eEthereumNetwork.kovan]: undefined,
     [eEthereumNetwork.ropsten]: undefined,
-    [eEthereumNetwork.main]: undefined,
+    [eEthereumNetwork.main]: '0xf3BceA7494D8f3ac21585CA4b0E52aa175c24C25',
     [eEthereumNetwork.tenderlyMain]: undefined,
   },
   EmergencyAdminIndex: 1,
@@ -159,8 +159,11 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.kovan]: {
       DAI: '0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541',
       NS2DRP: ZERO_ADDRESS,
-      CF4DRP: ZERO_ADDRESS,
       FF1DRP: ZERO_ADDRESS,
+      CF4DRP: ZERO_ADDRESS,
+      BL1DRP: ZERO_ADDRESS,
+      HT2DRP: ZERO_ADDRESS,
+      BR3DRP: ZERO_ADDRESS,
     },
     [eEthereumNetwork.ropsten]: {
       DAI: '0x64b8e49baded7bfb2fd5a9235b2440c0ee02971b',
@@ -168,8 +171,11 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.main]: {
       DAI: '0x773616E4d11A78F511299002da57A0a94577F1f4',
       NS2DRP: ZERO_ADDRESS,
-      CF4DRP: ZERO_ADDRESS,
       FF1DRP: ZERO_ADDRESS,
+      CF4DRP: ZERO_ADDRESS,
+      BL1DRP: ZERO_ADDRESS,
+      HT2DRP: ZERO_ADDRESS,
+      BR3DRP: ZERO_ADDRESS,
     },
     [eEthereumNetwork.tenderlyMain]: {
       DAI: '0x773616E4d11A78F511299002da57A0a94577F1f4',

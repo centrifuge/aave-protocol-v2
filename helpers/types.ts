@@ -248,8 +248,11 @@ export interface iAssetBase<T> {
   STAKE: T;
   xSUSHI: T;
   NS2DRP: T;
-  CF4DRP: T;
   FF1DRP: T;
+  CF4DRP: T;
+  BL1DRP: T;
+  HT2DRP: T;
+  BR3DRP: T;
 }
 
 export type iAssetsWithoutETH<T> = Omit<iAssetBase<T>, 'ETH'>;
@@ -285,7 +288,7 @@ export type iAaveArcPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' |
 
 export type iCentrifugePoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
-  'DAI' | 'NS2DRP' | 'CF4DRP' | 'FF1DRP'
+  'DAI' | 'NS2DRP' | 'FF1DRP' | 'CF4DRP' | 'HT2DRP' | 'BL1DRP' | 'BR3DRP'
 >;
 
 export type iLpPoolAssets<T> = Pick<
@@ -371,8 +374,11 @@ export enum TokenContractId {
   STAKE = 'STAKE',
   xSUSHI = 'xSUSHI',
   NS2DRP = 'NS2DRP',
-  CF4DRP = 'CF4DRP',
   FF1DRP = 'FF1DRP',
+  CF4DRP = 'CF4DRP',
+  BL1DRP = 'BL1DRP',
+  HT2DRP = 'HT2DRP',
+  BR3DRP = 'BR3DRP',
 }
 
 export interface IReserveParams extends IReserveBorrowParams, IReserveCollateralParams {
