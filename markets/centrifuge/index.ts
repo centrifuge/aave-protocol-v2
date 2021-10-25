@@ -54,7 +54,7 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
       HT2DRP: '0xd511397f79b112638ee3B6902F7B53A0A23386C4',
       BR3DRP: '0x8d2b8Df9Cb35B875F9726F43a013caF16aEFA472',
     },
-    [eEthereumNetwork.tenderlyMain]: {},
+    [eEthereumNetwork.tenderly]: {},
   },
   AssessorContracts: {
     [eEthereumNetwork.buidlerevm]: {},
@@ -77,7 +77,7 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
       HT2DRP: '0x6e40A9d1eE2c8eF95322b879CBae35BE6Dd2D143',
       BR3DRP: '0x546F37C27483ffd6deC56076d0F8b4B636C5616B',
     },
-    [eEthereumNetwork.tenderlyMain]: {},
+    [eEthereumNetwork.tenderly]: {},
   },
   AssetCurrencies: {
     [eEthereumNetwork.buidlerevm]: {},
@@ -100,7 +100,7 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
       HT2DRP: DAI,
       BR3DRP: DAI,
     },
-    [eEthereumNetwork.tenderlyMain]: {},
+    [eEthereumNetwork.tenderly]: {},
   },
 };
 
