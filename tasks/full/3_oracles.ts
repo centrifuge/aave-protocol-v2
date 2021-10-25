@@ -16,9 +16,9 @@ import { waitForTx, notFalsyOrZeroAddress } from '../../helpers/misc-utils';
 import {
   ConfigNames,
   loadPoolConfig,
-  getWethAddress,
   getGenesisPoolAdmin,
   getLendingRateOracles,
+  getQuoteCurrency,
 } from '../../helpers/configuration';
 import {
   getAaveOracle,
@@ -53,9 +53,11 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       const tokensToWatch: SymbolMap<string> = {
         ...reserveAssets,
       };
-      // USD: UsdAddress,
-
-      const [tokens, aggregators] = getPairsTokenAggregator(tokensToWatch, chainlinkAggregators);
+      const [tokens, aggregators] = getPairsTokenAggregator(
+        tokensToWatch,
+        chainlinkAggregators,
+        poolConfig.OracleQuoteCurrency
+      );
 
       let fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
       let centrifugeOracle;
@@ -85,9 +87,16 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
 
       if (notFalsyOrZeroAddress(aaveOracleAddress)) {
         aaveOracle = await await getAaveOracle(aaveOracleAddress);
+        await waitForTx(await aaveOracle.setAssetSources(tokens, aggregators));
       } else {
         aaveOracle = await deployAaveOracle(
-          [tokens, aggregators, fallbackOracleAddress, await getWethAddress(poolConfig)],
+          [
+            tokens,
+            aggregators,
+            fallbackOracleAddress,
+            await getQuoteCurrency(poolConfig),
+            poolConfig.OracleQuoteUnit,
+          ],
           verify
         );
         await waitForTx(await aaveOracle.setAssetSources(tokens, aggregators));
@@ -110,7 +119,7 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
         );
       }
 
-      console.log('Aave Oracle: %s', lendingRateOracle.address);
+      console.log('Aave Oracle: %s', aaveOracle.address);
       console.log('Lending Rate Oracle: %s', lendingRateOracle.address);
 
       // Register the proxy price provider on the addressesProvider
@@ -120,7 +129,7 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       if (DRE.network.name.includes('tenderly')) {
         const transactionLink = `https://dashboard.tenderly.co/${DRE.config.tenderly.username}/${
           DRE.config.tenderly.project
-        }/fork/${DRE.tenderlyNetwork.getFork()}/simulation/${DRE.tenderlyNetwork.getHead()}`;
+        }/fork/${DRE.tenderly.network().getFork()}/simulation/${DRE.tenderly.network().getHead()}`;
         console.error('Check tx error:', transactionLink);
       }
       throw error;

@@ -2,7 +2,7 @@ import { Contract, Signer, utils, ethers, BigNumberish } from 'ethers';
 import { signTypedData_v4 } from 'eth-sig-util';
 import { fromRpcSig, ECDSASignature } from 'ethereumjs-util';
 import BigNumber from 'bignumber.js';
-import { getDb, DRE, waitForTx } from './misc-utils';
+import { getDb, DRE, waitForTx, notFalsyOrZeroAddress } from './misc-utils';
 import {
   tEthereumAddress,
   eContractid,
@@ -14,10 +14,11 @@ import {
   ePolygonNetwork,
   eXDaiNetwork,
   eNetwork,
-  iParamsPerNetworkAll,
   iEthereumParamsPerNetwork,
   iPolygonParamsPerNetwork,
   iXDaiParamsPerNetwork,
+  iAvalancheParamsPerNetwork,
+  eAvalancheNetwork,
 } from './types';
 import { MintableERC20 } from '../types/MintableERC20';
 import { Artifact } from 'hardhat/types';
@@ -26,6 +27,8 @@ import { verifyEtherscanContract } from './etherscan-verification';
 import { getFirstSigner, getIErc20Detailed } from './contracts-getters';
 import { usingTenderly, verifyAtTenderly } from './tenderly-utils';
 import { usingPolygon, verifyAtPolygon } from './polygon-utils';
+import { ConfigNames, loadPoolConfig } from './configuration';
+import { ZERO_ADDRESS } from './constants';
 import { getDefenderRelaySigner, usingDefender } from './defender-utils';
 
 export type MockTokenMap = { [symbol: string]: MintableERC20 };
@@ -148,10 +151,11 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
     kovan,
     coverage,
     buidlerevm,
-    tenderlyMain,
+    tenderly,
   } = param as iEthereumParamsPerNetwork<T>;
   const { matic, mumbai } = param as iPolygonParamsPerNetwork<T>;
   const { xdai } = param as iXDaiParamsPerNetwork<T>;
+  const { avalanche, fuji } = param as iAvalancheParamsPerNetwork<T>;
   if (process.env.FORK) {
     return param[process.env.FORK as eNetwork] as T;
   }
@@ -169,19 +173,33 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
       return ropsten;
     case eEthereumNetwork.main:
       return main;
-    case eEthereumNetwork.tenderlyMain:
-      return tenderlyMain;
+    case eEthereumNetwork.tenderly:
+      return tenderly;
     case ePolygonNetwork.matic:
       return matic;
     case ePolygonNetwork.mumbai:
       return mumbai;
     case eXDaiNetwork.xdai:
       return xdai;
+    case eAvalancheNetwork.avalanche:
+      return avalanche;
+    case eAvalancheNetwork.fuji:
+      return fuji;
   }
 };
 
+export const getOptionalParamAddressPerNetwork = (
+  param: iParamsPerNetwork<tEthereumAddress> | undefined | null,
+  network: eNetwork
+) => {
+  if (!param) {
+    return ZERO_ADDRESS;
+  }
+  return getParamPerNetwork(param, network);
+};
+
 export const getParamPerPool = <T>(
-  { proto, amm, matic, arc, centrifuge }: iParamsPerPool<T>,
+  { proto, amm, matic, arc, avalanche, centrifuge }: iParamsPerPool<T>,
   pool: AavePools
 ) => {
   switch (pool) {
@@ -195,6 +213,8 @@ export const getParamPerPool = <T>(
       return centrifuge;
     case AavePools.arc:
       return arc;
+    case AavePools.avalanche:
+      return avalanche;
     default:
       return proto;
   }
@@ -334,6 +354,38 @@ export const buildFlashLiquidationAdapterParams = (
   );
 };
 
+export const buildParaSwapLiquiditySwapParams = (
+  assetToSwapTo: tEthereumAddress,
+  minAmountToReceive: BigNumberish,
+  swapAllBalanceOffset: BigNumberish,
+  swapCalldata: string | Buffer,
+  augustus: tEthereumAddress,
+  permitAmount: BigNumberish,
+  deadline: BigNumberish,
+  v: BigNumberish,
+  r: string | Buffer,
+  s: string | Buffer
+) => {
+  return ethers.utils.defaultAbiCoder.encode(
+    [
+      'address',
+      'uint256',
+      'uint256',
+      'bytes',
+      'address',
+      'tuple(uint256,uint256,uint8,bytes32,bytes32)',
+    ],
+    [
+      assetToSwapTo,
+      minAmountToReceive,
+      swapAllBalanceOffset,
+      swapCalldata,
+      augustus,
+      [permitAmount, deadline, v, r, s],
+    ]
+  );
+};
+
 export const verifyContract = async (
   id: string,
   instance: Contract,
@@ -348,4 +400,24 @@ export const verifyContract = async (
     await verifyEtherscanContract(instance.address, args);
   }
   return instance;
+};
+
+export const getContractAddressWithJsonFallback = async (
+  id: string,
+  pool: ConfigNames
+): Promise<tEthereumAddress> => {
+  const poolConfig = loadPoolConfig(pool);
+  const network = <eNetwork>DRE.network.name;
+  const db = getDb();
+
+  const contractAtMarketConfig = getOptionalParamAddressPerNetwork(poolConfig[id], network);
+  if (notFalsyOrZeroAddress(contractAtMarketConfig)) {
+    return contractAtMarketConfig;
+  }
+
+  const contractAtDb = await getDb().get(`${id}.${DRE.network.name}`).value();
+  if (contractAtDb?.address) {
+    return contractAtDb.address as tEthereumAddress;
+  }
+  throw Error(`Missing contract address ${id} at Market config and JSON local db`);
 };

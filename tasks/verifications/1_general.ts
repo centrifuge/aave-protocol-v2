@@ -1,11 +1,9 @@
-import { error } from 'console';
-import { zeroAddress } from 'ethereumjs-util';
 import { task } from 'hardhat/config';
 import {
   loadPoolConfig,
   ConfigNames,
-  getWethAddress,
   getTreasuryAddress,
+  getWrappedNativeTokenAddress,
 } from '../../helpers/configuration';
 import { ZERO_ADDRESS } from '../../helpers/constants';
 import {
@@ -22,6 +20,7 @@ import {
   getProxy,
   getWalletProvider,
   getWETHGateway,
+  getPermissionedWETHGateway,
 } from '../../helpers/contracts-getters';
 import { verifyContract, getParamPerNetwork } from '../../helpers/contracts-helpers';
 import { notFalsyOrZeroAddress } from '../../helpers/misc-utils';
@@ -53,7 +52,8 @@ task('verify:general', 'Verify contracts at Etherscan')
       : await getLendingPoolAddressesProviderRegistry();
     const lendingPoolAddress = await addressesProvider.getLendingPool();
     const lendingPoolConfiguratorAddress = await addressesProvider.getLendingPoolConfigurator(); //getLendingPoolConfiguratorProxy();
-    const lendingPoolCollateralManagerAddress = await addressesProvider.getLendingPoolCollateralManager();
+    const lendingPoolCollateralManagerAddress =
+      await addressesProvider.getLendingPoolCollateralManager();
 
     const lendingPoolProxy = await getProxy(lendingPoolAddress);
     const lendingPoolConfiguratorProxy = await getProxy(lendingPoolConfiguratorAddress);
@@ -132,6 +132,7 @@ task('verify:general', 'Verify contracts at Etherscan')
       console.log('\n- Verifying  Wallet Balance Provider...\n');
       await verifyContract(eContractid.WalletBalanceProvider, walletProvider, []);
 
+<<<<<<< HEAD
       if (pool !== ConfigNames.Centrifuge) {
         // WETHGateway
         console.log('\n- Verifying  WETHGateway...\n');
@@ -139,6 +140,13 @@ task('verify:general', 'Verify contracts at Etherscan')
           await getWethAddress(poolConfig),
         ]);
       }
+=======
+      // WETHGateway
+      console.log('\n- Verifying  WETHGateway...\n');
+      await verifyContract(eContractid.WETHGateway, wethGateway, [
+        await getWrappedNativeTokenAddress(poolConfig),
+      ]);
+>>>>>>> 1ff6665aea357feece913831823f1a348ebb6d89
     }
     // Lending Pool proxy
     console.log('\n- Verifying  Lending Pool Proxy...\n');

@@ -1,24 +1,18 @@
 import {
   eContractid,
-  eEthereumNetwork,
   eNetwork,
   iMultiPoolsAssets,
   IReserveParams,
   tEthereumAddress,
 } from './types';
 import { AaveProtocolDataProvider } from '../types/AaveProtocolDataProvider';
-import { chunk, DRE, getDb, waitForTx } from './misc-utils';
+import { chunk, getDb, waitForTx } from './misc-utils';
 import {
-  getAaveProtocolDataProvider,
   getAToken,
   getATokensAndRatesHelper,
-  getFirstSigner,
   getLendingPoolAddressesProvider,
   getLendingPoolConfiguratorProxy,
-  getStableAndVariableTokensHelper,
 } from './contracts-getters';
-import { rawInsertContractAddressInDb } from './contracts-helpers';
-import { BigNumber, BigNumberish, Signer } from 'ethers';
 import {
   deployDefaultReserveInterestRateStrategy,
   deployDelegationAwareAToken,
@@ -30,10 +24,19 @@ import {
   deployVariableDebtToken,
   deployVariableDebtTokenByType,
 } from './contracts-deployments';
+import { BigNumber, BigNumberish } from 'ethers';
+import { ConfigNames } from './configuration';
+import { deployRateStrategy } from './contracts-deployments';
+
 import { ZERO_ADDRESS } from './constants';
 import { isZeroAddress } from 'ethereumjs-util';
 import { DefaultReserveInterestRateStrategy, DelegationAwareAToken } from '../types';
 import { config } from 'process';
+
+import {
+  getContractAddressWithJsonFallback,
+  rawInsertContractAddressInDb,
+} from './contracts-helpers';
 
 export const chooseATokenDeployment = (id: eContractid) => {
   switch (id) {
@@ -41,8 +44,6 @@ export const chooseATokenDeployment = (id: eContractid) => {
       return deployGenericAToken;
     case eContractid.DelegationAwareAToken:
       return deployDelegationAwareAToken;
-    default:
-      throw Error(`Missing aToken deployment script for: ${id}`);
   }
 };
 
@@ -56,18 +57,17 @@ export const initReservesByHelper = async (
   admin: tEthereumAddress,
   treasuryAddress: tEthereumAddress,
   incentivesController: tEthereumAddress,
+  poolName: ConfigNames,
   verify: boolean
-): Promise<BigNumber> => {
+) => {
   let gasUsage = BigNumber.from('0');
 
   const addressProvider = await getLendingPoolAddressesProvider();
 
   // CHUNK CONFIGURATION
-  const initChunks = 4;
+  const initChunks = 1;
 
   // Initialize variables for future reserves initialization
-  let reserveTokens: string[] = [];
-  let reserveInitDecimals: string[] = [];
   let reserveSymbols: string[] = [];
 
   let initInputParams: {
@@ -135,36 +135,18 @@ export const initReservesByHelper = async (
     })
   );
 
-  console.log('Debt tokens deployed, ', stableDebtTokensAddresses, variableDebtTokensAddresses);
-
   const aTokenImplementation = await deployGenericATokenImpl(verify);
   aTokenImplementationAddress = aTokenImplementation.address;
   rawInsertContractAddressInDb(`aTokenImpl`, aTokenImplementationAddress);
 
-  const delegatedAwareReserves = Object.entries(reservesParams).filter(
-    ([_, { aTokenImpl }]) => aTokenImpl === eContractid.DelegationAwareAToken
-  ) as [string, IReserveParams][];
-
-  if (delegatedAwareReserves.length > 0) {
-    const delegationAwareATokenImplementation = await deployDelegationAwareATokenImpl(verify);
-    delegationAwareATokenImplementationAddress = delegationAwareATokenImplementation.address;
-    rawInsertContractAddressInDb(
-      `delegationAwareATokenImpl`,
-      delegationAwareATokenImplementationAddress
-    );
-  }
-
-  const reserves = Object.entries(reservesParams).filter(
-    ([_, { aTokenImpl }]) =>
-      aTokenImpl === eContractid.DelegationAwareAToken || aTokenImpl === eContractid.AToken
-  ) as [string, IReserveParams][];
+  const reserves = Object.entries(reservesParams);
 
   for (let [symbol, params] of reserves) {
     if (!tokenAddresses[symbol]) {
       console.log(`- Skipping init of ${symbol} due token address is not set at markets config`);
       continue;
     }
-    const { strategy, aTokenImpl, reserveDecimals } = params;
+    const { strategy } = params;
     const {
       optimalUtilizationRate,
       baseVariableBorrowRate,
@@ -184,29 +166,23 @@ export const initReservesByHelper = async (
         stableRateSlope1,
         stableRateSlope2,
       ];
-      strategyAddresses[strategy.name] = (
-        await deployDefaultReserveInterestRateStrategy(rateStrategies[strategy.name], verify)
-      ).address;
+      strategyAddresses[strategy.name] = await deployRateStrategy(
+        strategy.name,
+        rateStrategies[strategy.name],
+        verify
+      );
+
       // This causes the last strategy to be printed twice, once under "DefaultReserveInterestRateStrategy"
       // and once under the actual `strategyASSET` key.
       rawInsertContractAddressInDb(strategy.name, strategyAddresses[strategy.name]);
     }
-    strategyAddressPerAsset[symbol] = strategyAddresses[strategy.name];
-    console.log('Strategy address for asset %s: %s', symbol, strategyAddressPerAsset[symbol]);
-
-    if (aTokenImpl === eContractid.AToken) {
-      aTokenType[symbol] = 'generic';
-    } else if (aTokenImpl === eContractid.DelegationAwareAToken) {
-      aTokenType[symbol] = 'delegation aware';
-    }
-
-    reserveInitDecimals.push(reserveDecimals);
-    reserveTokens.push(tokenAddresses[symbol]);
+    // Prepare input parameters
     reserveSymbols.push(symbol);
   }
 
   for (let i = 0; i < reserveSymbols.length; i++) {
     const symbol = reserveSymbols[i];
+    const strategy = reservesParams[symbol].strategy;
 
     const stableDebtImpl =
       reservesParams[symbol].stableDebtTokenImpl ?? eContractid.StableDebtToken;
@@ -228,21 +204,24 @@ export const initReservesByHelper = async (
     }
 
     initInputParams.push({
-      aTokenImpl: aTokenToUse,
+      aTokenImpl: await getContractAddressWithJsonFallback(
+        reservesParams[symbol].aTokenImpl,
+        poolName
+      ),
       stableDebtTokenImpl: stableDebtAddress,
       variableDebtTokenImpl: variableDebtAddress,
-      underlyingAssetDecimals: reserveInitDecimals[i],
-      interestRateStrategyAddress: strategyAddressPerAsset[symbol],
-      underlyingAsset: reserveTokens[i],
+      underlyingAssetDecimals: reservesParams[symbol].reserveDecimals,
+      interestRateStrategyAddress: strategyAddresses[strategy.name],
+      underlyingAsset: tokenAddresses[symbol],
       treasury: treasuryAddress,
-      incentivesController,
-      underlyingAssetName: reserveSymbols[i],
-      aTokenName: `${aTokenNamePrefix} ${reserveSymbols[i]}`,
-      aTokenSymbol: `a${symbolPrefix}${reserveSymbols[i]}`,
-      variableDebtTokenName: `${variableDebtTokenNamePrefix} ${symbolPrefix}${reserveSymbols[i]}`,
-      variableDebtTokenSymbol: `variableDebt${symbolPrefix}${reserveSymbols[i]}`,
-      stableDebtTokenName: `${stableDebtTokenNamePrefix} ${reserveSymbols[i]}`,
-      stableDebtTokenSymbol: `stableDebt${symbolPrefix}${reserveSymbols[i]}`,
+      incentivesController: incentivesController,
+      underlyingAssetName: symbol,
+      aTokenName: `${aTokenNamePrefix} ${symbol}`,
+      aTokenSymbol: `a${symbolPrefix}${symbol}`,
+      variableDebtTokenName: `${variableDebtTokenNamePrefix} ${symbolPrefix}${symbol}`,
+      variableDebtTokenSymbol: `variableDebt${symbolPrefix}${symbol}`,
+      stableDebtTokenName: `${stableDebtTokenNamePrefix} ${symbol}`,
+      stableDebtTokenSymbol: `stableDebt${symbolPrefix}${symbol}`,
       params: '0x10',
     });
   }
@@ -252,7 +231,6 @@ export const initReservesByHelper = async (
   const chunkedInitInputParams = chunk(initInputParams, initChunks);
 
   const configurator = await getLendingPoolConfiguratorProxy();
-  //await waitForTx(await addressProvider.setPoolAdmin(admin));
 
   console.log(`- Reserves initialization in ${chunkedInitInputParams.length} txs`);
   for (let chunkIndex = 0; chunkIndex < chunkedInitInputParams.length; chunkIndex++) {
@@ -262,10 +240,7 @@ export const initReservesByHelper = async (
 
     console.log(`  - Reserve ready for: ${chunkedSymbols[chunkIndex].join(', ')}`);
     console.log('    * gasUsed', tx3.gasUsed.toString());
-    //gasUsage = gasUsage.add(tx3.gasUsed);
   }
-
-  return gasUsage; // Deprecated
 };
 
 export const getPairsTokenAggregator = (
@@ -376,9 +351,7 @@ export const configureReservesByHelper = async (
     console.log(`- Configure reserves in ${chunkedInputParams.length} txs`);
     for (let chunkIndex = 0; chunkIndex < chunkedInputParams.length; chunkIndex++) {
       await waitForTx(
-        await atokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex], {
-          gasLimit: 12000000,
-        })
+        await atokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex])
       );
       console.log(`  - Init for: ${chunkedSymbols[chunkIndex].join(', ')}`);
     }
