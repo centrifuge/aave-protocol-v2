@@ -68,7 +68,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.main]: '0xf3BceA7494D8f3ac21585CA4b0E52aa175c24C25',
     [eEthereumNetwork.tenderly]: undefined,
   },
-  EmergencyAdminIndex: 1,
+  EmergencyAdminIndex: 0,
   ProviderRegistry: {
     [eEthereumNetwork.kovan]: '0x1E40B561EC587036f9789aF83236f057D1ed2A90',
     [eEthereumNetwork.ropsten]: '',
