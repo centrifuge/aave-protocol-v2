@@ -11,10 +11,10 @@ import { ICommonConfiguration, eEthereumNetwork } from '../../helpers/types';
 // ----------------
 
 export const CommonsConfig: ICommonConfiguration = {
-  MarketId: 'Centrifuge',
-  ATokenNamePrefix: 'Centrifuge Market',
-  StableDebtTokenNamePrefix: 'Centrifuge Market stable debt',
-  VariableDebtTokenNamePrefix: 'Centrifuge Market variable debt',
+  MarketId: 'RWA',
+  ATokenNamePrefix: 'RWA Market',
+  StableDebtTokenNamePrefix: 'RWA Market stable debt',
+  VariableDebtTokenNamePrefix: 'RWA Market variable debt',
   SymbolPrefix: '',
   ProviderId: 0, // Overriden in index.ts
   OracleQuoteCurrency: 'ETH',

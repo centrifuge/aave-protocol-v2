@@ -2,16 +2,11 @@ import { task } from 'hardhat/config';
 import { getParamPerNetwork } from '../../helpers/contracts-helpers';
 import {
   deployAaveOracle,
-  deployCentrifugeOracle,
+  deployRwaMarketOracle,
   deployLendingRateOracle,
 } from '../../helpers/contracts-deployments';
 import { setInitialMarketRatesInRatesOracleByHelper } from '../../helpers/oracles-helpers';
-import {
-  ICommonConfiguration,
-  eNetwork,
-  SymbolMap,
-  ICentrifugeConfiguration,
-} from '../../helpers/types';
+import { ICommonConfiguration, eNetwork, SymbolMap, IRwaConfiguration } from '../../helpers/types';
 import { waitForTx, notFalsyOrZeroAddress } from '../../helpers/misc-utils';
 import {
   ConfigNames,
@@ -60,21 +55,18 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       );
 
       let fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
-      let centrifugeOracle;
-      if (poolConfig.MarketId === 'Centrifuge genesis market') {
-        centrifugeOracle = await deployCentrifugeOracle(verify);
-        fallbackOracleAddress = centrifugeOracle.address;
+      let rwaOracle;
+      if (poolConfig.MarketId === 'RWA Market') {
+        rwaOracle = await deployRwaMarketOracle(verify);
+        fallbackOracleAddress = rwaOracle.address;
 
-        const centrifugeConfig = poolConfig as ICentrifugeConfiguration;
-        const assessorContracts = await getParamPerNetwork(
-          centrifugeConfig.AssessorContracts,
-          network
-        );
-        const assetCurrencies = await getParamPerNetwork(centrifugeConfig.AssetCurrencies, network);
+        const rwaConfig = poolConfig as IRwaConfiguration;
+        const assessorContracts = await getParamPerNetwork(rwaConfig.AssessorContracts, network);
+        const assetCurrencies = await getParamPerNetwork(rwaConfig.AssetCurrencies, network);
         const dropTokens = Object.keys(assessorContracts);
 
         await waitForTx(
-          await centrifugeOracle.setAssetConfig(
+          await rwaOracle.setAssetConfig(
             dropTokens.map((token) => tokensToWatch[token]),
             dropTokens.map((token) => assessorContracts[token]),
             dropTokens.map((token) => assetCurrencies[token])
@@ -102,8 +94,8 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
         await waitForTx(await aaveOracle.setAssetSources(tokens, aggregators));
       }
 
-      if (poolConfig.MarketId === 'Centrifuge genesis market') {
-        await waitForTx(await centrifugeOracle.setAaveOracle(aaveOracle.address));
+      if (poolConfig.MarketId === 'RWA Market') {
+        await waitForTx(await rwaOracle.setAaveOracle(aaveOracle.address));
       }
 
       if (notFalsyOrZeroAddress(lendingRateOracleAddress)) {

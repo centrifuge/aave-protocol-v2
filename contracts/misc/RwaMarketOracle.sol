@@ -5,20 +5,20 @@ import {Ownable} from '../dependencies/openzeppelin/contracts/Ownable.sol';
 import {SafeMath} from '../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {IPriceOracleGetter} from '../interfaces/IPriceOracleGetter.sol';
 
-interface ICentrifugeAssessor {
+interface IRwaMarketAssessor {
   function calcSeniorTokenPrice() external view returns (uint256);
 }
 
 /**
   This acts as a fallback oracle for the DROP tokens, and uses the token price from the Tinlake Assessor contract.
  */
-contract CentrifugeOracle is IPriceOracleGetter, Ownable {
+contract RwaMarketOracle is IPriceOracleGetter, Ownable {
   using SafeMath for uint256;
 
   event AssetConfigUpdated(address indexed asset, address indexed source, address indexed currency);
 
   // assetsSources are the assessor contract addresses for each DROP token.
-  mapping(address => ICentrifugeAssessor) public assetsSources;
+  mapping(address => IRwaMarketAssessor) public assetsSources;
 
   // assetsCurrencies are the currencies in which each DROP token is denominated.
   mapping(address => address) public assetsCurrencies;
@@ -47,7 +47,7 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
     );
 
     for (uint256 i = 0; i < assets.length; i++) {
-      assetsSources[assets[i]] = ICentrifugeAssessor(sources[i]);
+      assetsSources[assets[i]] = IRwaMarketAssessor(sources[i]);
       assetsCurrencies[assets[i]] = currencies[i];
       emit AssetConfigUpdated(assets[i], sources[i], currencies[i]);
     }
@@ -56,7 +56,7 @@ contract CentrifugeOracle is IPriceOracleGetter, Ownable {
   /// @notice Gets an asset price by address
   /// @param asset The asset address
   function getAssetPrice(address asset) public view override returns (uint256) {
-    ICentrifugeAssessor source = assetsSources[asset];
+    IRwaMarketAssessor source = assetsSources[asset];
     address currency = assetsCurrencies[asset];
     require(address(source) != address(0) && currency != address(0), 'invalid-asset');
 

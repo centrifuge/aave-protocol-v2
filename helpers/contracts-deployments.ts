@@ -20,7 +20,7 @@ import {
   ATokenFactory,
   ATokensAndRatesHelperFactory,
   AaveOracleFactory,
-  CentrifugeOracleFactory,
+  RwaMarketOracleFactory,
   DefaultReserveInterestRateStrategyFactory,
   DelegationAwareATokenFactory,
   InitializableAdminUpgradeabilityProxyFactory,
@@ -719,10 +719,10 @@ export const deployFlashLiquidationAdapter = async (
     verify
   );
 
-export const deployCentrifugeOracle = async (verify?: boolean) =>
+export const deployRwaMarketOracle = async (verify?: boolean) =>
   withSaveAndVerify(
-    await new CentrifugeOracleFactory(await getFirstSigner()).deploy(),
-    eContractid.CentrifugeOracle,
+    await new RwaMarketOracleFactory(await getFirstSigner()).deploy(),
+    eContractid.RwaMarketOracle,
     [],
     verify
   );

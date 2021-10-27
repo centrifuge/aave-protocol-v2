@@ -8,7 +8,7 @@ interface IRestrictedToken {
   function hasMember(address usr) external view returns (bool);
 }
 
-contract CentrifugeLiquidationProxy is ILendingPoolCollateralManager, Ownable {
+contract RwaMarketLiquidationProxy is ILendingPoolCollateralManager, Ownable {
   address private collateralManager;
 
   function setManager(address _collateralManager) external onlyOwner {

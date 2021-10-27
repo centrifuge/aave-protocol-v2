@@ -86,7 +86,7 @@ task('verify:general', 'Verify contracts at Etherscan')
       const walletProvider = await getWalletProvider();
 
       let wethGateway;
-      if (pool !== ConfigNames.Centrifuge) {
+      if (pool !== ConfigNames.Rwa) {
         const wethGatewayAddress = getParamPerNetwork(WethGateway, network);
         wethGateway = notFalsyOrZeroAddress(wethGatewayAddress)
           ? await getWETHGateway(wethGatewayAddress)
@@ -131,7 +131,7 @@ task('verify:general', 'Verify contracts at Etherscan')
       console.log('\n- Verifying  Wallet Balance Provider...\n');
       await verifyContract(eContractid.WalletBalanceProvider, walletProvider, []);
 
-      if (pool !== ConfigNames.Centrifuge) {
+      if (pool !== ConfigNames.Rwa) {
         // WETHGateway
         console.log('\n- Verifying  WETHGateway...\n');
         await verifyContract(eContractid.WETHGateway, wethGateway, [

@@ -8,7 +8,7 @@ import {
 } from './types';
 import { getEthersSignersAddresses, getParamPerPool } from './contracts-helpers';
 import AaveConfig from '../markets/aave';
-import CentrifugeConfig from '../markets/centrifuge';
+import RwaConfig from '../markets/rwa';
 import AaveArcConfig from '../markets/aave-arc';
 import MaticConfig from '../markets/matic';
 import AvalancheConfig from '../markets/avalanche';
@@ -25,7 +25,7 @@ export enum ConfigNames {
   Aave = 'Aave',
   Matic = 'Matic',
   Amm = 'Amm',
-  Centrifuge = 'Centrifuge',
+  Rwa = 'Rwa',
   Arc = 'Arc',
   Avalanche = 'Avalanche',
 }
@@ -42,8 +42,8 @@ export const loadPoolConfig = (configName: ConfigNames): PoolConfiguration => {
       return AvalancheConfig;
     case ConfigNames.Commons:
       return CommonsConfig;
-    case ConfigNames.Centrifuge:
-      return CentrifugeConfig;
+    case ConfigNames.Rwa:
+      return RwaConfig;
     case ConfigNames.Arc:
       return AaveArcConfig;
     default:
@@ -70,8 +70,8 @@ export const getReservesConfigByPool = (pool: AavePools): iMultiPoolsAssets<IRes
       [AavePools.matic]: {
         ...MaticConfig.ReservesConfig,
       },
-      [AavePools.centrifuge]: {
-        ...CentrifugeConfig.ReservesConfig,
+      [AavePools.rwa]: {
+        ...RwaConfig.ReservesConfig,
       },
       [AavePools.arc]: {
         ...AaveArcConfig.ReservesConfig,

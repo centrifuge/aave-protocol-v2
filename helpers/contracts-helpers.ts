@@ -199,7 +199,7 @@ export const getOptionalParamAddressPerNetwork = (
 };
 
 export const getParamPerPool = <T>(
-  { proto, amm, matic, arc, avalanche, centrifuge }: iParamsPerPool<T>,
+  { proto, amm, matic, arc, avalanche, rwa }: iParamsPerPool<T>,
   pool: AavePools
 ) => {
   switch (pool) {
@@ -209,8 +209,8 @@ export const getParamPerPool = <T>(
       return amm;
     case AavePools.matic:
       return matic;
-    case AavePools.centrifuge:
-      return centrifuge;
+    case AavePools.rwa:
+      return rwa;
     case AavePools.arc:
       return arc;
     case AavePools.avalanche:

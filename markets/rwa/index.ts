@@ -1,4 +1,4 @@
-import { ICentrifugeConfiguration, eEthereumNetwork } from '../../helpers/types';
+import { IRwaConfiguration, eEthereumNetwork } from '../../helpers/types';
 
 import { CommonsConfig } from './commons';
 import {
@@ -18,9 +18,9 @@ import {
 const DAI = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const KDAI = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD';
 
-export const CentrifugeConfig: ICentrifugeConfiguration = {
+export const RwaConfig: IRwaConfiguration = {
   ...CommonsConfig,
-  MarketId: 'Centrifuge genesis market',
+  MarketId: 'RWA Market',
   ProviderId: 1,
   ReservesConfig: {
     DAI: strategyDAI,
@@ -104,4 +104,4 @@ export const CentrifugeConfig: ICentrifugeConfiguration = {
   },
 };
 
-export default CentrifugeConfig;
+export default RwaConfig;

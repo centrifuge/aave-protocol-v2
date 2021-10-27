@@ -113,7 +113,7 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
 
       const lendingPoolAddress = await addressesProvider.getLendingPool();
 
-      if (pool === ConfigNames.Centrifuge) return;
+      if (pool === ConfigNames.Rwa) return;
 
       let gateWay = getParamPerNetwork(WethGateway, network);
       if (!notFalsyOrZeroAddress(gateWay)) {

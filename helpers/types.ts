@@ -45,7 +45,7 @@ export enum AavePools {
   proto = 'proto',
   matic = 'matic',
   amm = 'amm',
-  centrifuge = 'centrifuge',
+  rwa = 'rwa',
   arc = 'arc',
   avalanche = 'avalanche',
 }
@@ -97,7 +97,7 @@ export enum eContractid {
   UniswapLiquiditySwapAdapter = 'UniswapLiquiditySwapAdapter',
   UniswapRepayAdapter = 'UniswapRepayAdapter',
   FlashLiquidationAdapter = 'FlashLiquidationAdapter',
-  CentrifugeOracle = 'CentrifugeOracle',
+  RwaMarketOracle = 'RwaMarketOracle',
   PermissionManager = 'PermissionManager',
   PermissionedStableDebtToken = 'PermissionedStableDebtToken',
   PermissionedVariableDebtToken = 'PermissionedVariableDebtToken',
@@ -298,7 +298,7 @@ export type iAavePoolAssets<T> = Pick<
 
 export type iAaveArcPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' | 'WETH' | 'AAVE'>;
 
-export type iCentrifugePoolAssets<T> = Pick<
+export type iRwaPoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
   'DAI' | 'NS2DRP' | 'FF1DRP' | 'CF4DRP' | 'HT2DRP' | 'BL1DRP' | 'BR3DRP'
 >;
@@ -477,7 +477,7 @@ export interface iParamsPerPool<T> {
   [AavePools.proto]: T;
   [AavePools.matic]: T;
   [AavePools.amm]: T;
-  [AavePools.centrifuge]: T;
+  [AavePools.rwa]: T;
   [AavePools.arc]: T;
   [AavePools.avalanche]: T;
 }
@@ -571,8 +571,8 @@ export interface IAmmConfiguration extends ICommonConfiguration {
   ReservesConfig: iLpPoolAssets<IReserveParams>;
 }
 
-export interface ICentrifugeConfiguration extends ICommonConfiguration {
-  ReservesConfig: iCentrifugePoolAssets<IReserveParams>;
+export interface IRwaConfiguration extends ICommonConfiguration {
+  ReservesConfig: iRwaPoolAssets<IReserveParams>;
   AssessorContracts: iParamsPerNetwork<ITokenAddress>;
   AssetCurrencies: iParamsPerNetwork<ITokenAddress>;
 }
@@ -593,7 +593,4 @@ export interface ITokenAddress {
   [token: string]: tEthereumAddress;
 }
 
-export type PoolConfiguration =
-  | ICommonConfiguration
-  | IAaveConfiguration
-  | ICentrifugeConfiguration;
+export type PoolConfiguration = ICommonConfiguration | IAaveConfiguration | IRwaConfiguration;
