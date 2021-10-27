@@ -38,7 +38,6 @@ task('dev:deploy-oracles', 'Deploy oracles for dev environment')
       USD: UsdAddress,
     } as iAssetBase<string>;
     const mockTokens = await getAllMockedTokens();
-    console.log(`mockTokens`, Object.keys(mockTokens));
     const mockTokensAddress = Object.keys(mockTokens).reduce<iAssetBase<string>>((prev, curr) => {
       prev[curr as keyof iAssetBase<string>] = mockTokens[curr].address;
       return prev;
