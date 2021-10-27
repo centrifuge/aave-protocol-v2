@@ -42,7 +42,7 @@ export const RwaConfig: IRwaConfiguration = {
       CF4DRP: '0x931C3Ff1F5aC377137d3AaFD80F601BD76cE106e',
       BL1DRP: '0x9a1eA20747f6b5AD2ecA1603369DEE02042d0222',
       HT2DRP: '0xe99fb3ec1Ae8f3D7222CcBb83239B30928776c5b',
-      BR3DRP: '0x41e2Ab9abDe0F69c25344107f4D96b4109b09498',
+      BR3DRP: '0x0bDAA77Ba1cb0E7dAf18963A8f202Da077e867bA',
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
@@ -66,7 +66,7 @@ export const RwaConfig: IRwaConfiguration = {
       CF4DRP: '0xe5B1C9DB5316350e1501ADe417cBe44d2D6A04Cd',
       BL1DRP: '0xEB8bD43cb0f6A9cEB0943d79B7558DE7BE1348aD',
       HT2DRP: '0xac7582C83bb4730bB3F9537A20f73B380B59787C',
-      BR3DRP: '0xc7060Be72ceDCcBE3c5E088849f1EeD93e79EB85',
+      BR3DRP: '0x24a63EAb481C07142A197b2DDc82fAfF011507Bc',
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
