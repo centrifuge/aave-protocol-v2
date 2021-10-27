@@ -17,10 +17,12 @@ import {DataTypes} from '../../libraries/types/DataTypes.sol';
  * @author Aave
  */
 
-abstract contract PermissionedDebtTokenBase is DebtTokenBase {
+abstract contract PermissionedDebtTokenBase is DebtTokenBase 
+{
   //identifier for the permission manager contract in the addresses provider
   bytes32 public constant PERMISSION_MANAGER = keccak256('PERMISSION_MANAGER');
 
+  
   modifier onlyBorrowers {
     IPermissionManager permissionManager =
       IPermissionManager(_getLendingPool().getAddressesProvider().getAddress(PERMISSION_MANAGER));
@@ -40,6 +42,6 @@ abstract contract PermissionedDebtTokenBase is DebtTokenBase {
    * force a delegator HF to go below 1)
    **/
   function approveDelegation(address delegatee, uint256 amount) public override onlyBorrowers {
-    super.approveDelegation(delegatee, amount);
+    super.approveDelegation(delegatee, amount);   
   }
 }

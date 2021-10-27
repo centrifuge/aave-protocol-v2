@@ -88,6 +88,7 @@ makeSuite('Permission manager', (testEnv: TestEnv) => {
     ).to.be.revertedWith('INVALID_PERMISSIONADMIN');
 
     await permissionManager.removePermissionAdmins([users[1].address]);
+
   });
 
   it('Checks getPermissions', async () => {

@@ -34,7 +34,12 @@ interface ILendingPoolCollateralManager {
    * @param to The address that will receive the funds
    * @param amount The amount seized
    **/
-  event Seized(address indexed user, address indexed to, address indexed asset, uint256 amount);
+  event Seized(
+    address indexed user,
+    address indexed to,
+    address indexed asset,
+    uint256 amount
+  );
 
   /**
    * @dev Emitted when a reserve is disabled as collateral for an user

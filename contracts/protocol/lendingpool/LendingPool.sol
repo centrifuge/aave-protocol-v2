@@ -210,12 +210,7 @@ contract LendingPool is VersionedInitializable, ILendingPool, LendingPoolStorage
    * @param asset The address of the underlying asset borrowed
    * @param rateMode The rate mode that the user wants to swap to
    **/
-  function swapBorrowRateMode(address asset, uint256 rateMode)
-    public
-    virtual
-    override
-    whenNotPaused
-  {
+  function swapBorrowRateMode(address asset, uint256 rateMode) public virtual override whenNotPaused {
     DataTypes.ReserveData storage reserve = _reserves[asset];
 
     (uint256 stableDebt, uint256 variableDebt) = Helpers.getUserCurrentDebt(msg.sender, reserve);
@@ -268,12 +263,7 @@ contract LendingPool is VersionedInitializable, ILendingPool, LendingPoolStorage
    * @param asset The address of the underlying asset borrowed
    * @param user The address of the user to be rebalanced
    **/
-  function rebalanceStableBorrowRate(address asset, address user)
-    public
-    virtual
-    override
-    whenNotPaused
-  {
+  function rebalanceStableBorrowRate(address asset, address user) public virtual override whenNotPaused {
     DataTypes.ReserveData storage reserve = _reserves[asset];
 
     IERC20 stableDebtToken = IERC20(reserve.stableDebtTokenAddress);
