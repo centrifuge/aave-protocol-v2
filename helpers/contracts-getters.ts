@@ -67,13 +67,6 @@ export const getLendingPool = async (address?: tEthereumAddress) =>
     await getFirstSigner()
   );
 
-export const getPermissionsManager = async (address?: tEthereumAddress) =>
-  await PermissionManagerFactory.connect(
-    address ||
-      (await getDb().get(`${eContractid.PermissionManager}.${DRE.network.name}`).value()).address,
-    await getFirstSigner()
-  );
-
 export const getPriceOracle = async (address?: tEthereumAddress) =>
   await PriceOracleFactory.connect(
     address ||
