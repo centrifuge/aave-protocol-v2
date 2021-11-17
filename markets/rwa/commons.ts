@@ -238,7 +238,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.coverage]: ZERO_ADDRESS,
     [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
     [eEthereumNetwork.buidlerevm]: ZERO_ADDRESS,
-    [eEthereumNetwork.kovan]: ZERO_ADDRESS,
+    [eEthereumNetwork.kovan]: '0x2c28827845528664160dbfF1eDecabf15634A70a',
     [eEthereumNetwork.ropsten]: ZERO_ADDRESS,
     [eEthereumNetwork.main]: ZERO_ADDRESS,
     [eEthereumNetwork.tenderly]: ZERO_ADDRESS,
