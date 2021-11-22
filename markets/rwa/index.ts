@@ -2,7 +2,7 @@ import { IRwaConfiguration, eEthereumNetwork } from '../../helpers/types';
 
 import { CommonsConfig } from './commons';
 import {
-  strategyDAI,
+  strategyUSDC,
   strategyNS2DRP,
   strategyFF1DRP,
   strategyCF4DRP,
@@ -15,6 +15,8 @@ import {
 // POOL--SPECIFIC PARAMS
 // ----------------
 
+const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const KUSDC = '0x3a0C55a866ff1a7B8F1d1D2Dd492fFB58287c599';
 const DAI = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const KDAI = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD';
 
@@ -23,7 +25,7 @@ export const RwaConfig: IRwaConfiguration = {
   MarketId: 'RWA Market',
   ProviderId: 1,
   ReservesConfig: {
-    DAI: strategyDAI,
+    USDC: strategyUSDC,
     NS2DRP: strategyNS2DRP,
     FF1DRP: strategyFF1DRP,
     CF4DRP: strategyCF4DRP,
@@ -36,7 +38,7 @@ export const RwaConfig: IRwaConfiguration = {
     [eEthereumNetwork.hardhat]: {},
     [eEthereumNetwork.coverage]: {},
     [eEthereumNetwork.kovan]: {
-      DAI: KDAI,
+      USDC: KUSDC,
       NS2DRP: '0xe8fcCBf789736717b7a8d10a536147cD823e166E',
       FF1DRP: '0x0f763b4d5032f792fA39eE54BE5422592eC8329B',
       CF4DRP: '0x931C3Ff1F5aC377137d3AaFD80F601BD76cE106e',
@@ -46,7 +48,7 @@ export const RwaConfig: IRwaConfiguration = {
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
-      DAI: DAI,
+      USDC: USDC,
       NS2DRP: '0xE4C72b4dE5b0F9ACcEA880Ad0b1F944F85A9dAA0',
       FF1DRP: '0x44718d306a8Fa89545704Ae38B2B97c06bF11FC1',
       CF4DRP: '0x5b2F0521875B188C0afc925B1598e1FF246F9306',

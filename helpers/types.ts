@@ -300,7 +300,7 @@ export type iAaveArcPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' |
 
 export type iRwaPoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
-  'DAI' | 'NS2DRP' | 'FF1DRP' | 'CF4DRP' | 'HT2DRP' | 'BL1DRP' | 'BR3DRP'
+  'USDC' | 'NS2DRP' | 'FF1DRP' | 'CF4DRP' | 'HT2DRP' | 'BL1DRP' | 'BR3DRP'
 >;
 
 export type iLpPoolAssets<T> = Pick<

@@ -1,15 +1,15 @@
 import { eContractid, IReserveParams } from '../../helpers/types';
 
-import { rateStrategyDROP, rateStrategyDAI } from './rateStrategies';
+import { rateStrategyDROP, rateStrategyUSDC } from './rateStrategies';
 
-export const strategyDAI: IReserveParams = {
-  strategy: rateStrategyDAI,
+export const strategyUSDC: IReserveParams = {
+  strategy: rateStrategyUSDC,
   baseLTVAsCollateral: '0', // cannot be used as collateral
   liquidationThreshold: '0', // cannot be used as collateral
   liquidationBonus: '0', // cannot be used as collateral
   borrowingEnabled: true,
   stableBorrowRateEnabled: false,
-  reserveDecimals: '18',
+  reserveDecimals: '6',
   aTokenImpl: eContractid.AToken,
   stableDebtTokenImpl: eContractid.PermissionedStableDebtToken,
   variableDebtTokenImpl: eContractid.PermissionedVariableDebtToken,

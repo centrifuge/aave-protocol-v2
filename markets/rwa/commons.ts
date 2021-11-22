@@ -2,7 +2,7 @@ import {
   oneRay,
   ZERO_ADDRESS,
   MOCK_CHAINLINK_AGGREGATORS_PRICES,
-  oneEther,
+  oneUsd,
 } from '../../helpers/constants';
 import { ICommonConfiguration, eEthereumNetwork } from '../../helpers/types';
 
@@ -17,8 +17,8 @@ export const CommonsConfig: ICommonConfiguration = {
   VariableDebtTokenNamePrefix: 'RWA Market variable debt',
   SymbolPrefix: '',
   ProviderId: 0, // Overriden in index.ts
-  OracleQuoteCurrency: 'ETH',
-  OracleQuoteUnit: oneEther.toString(),
+  OracleQuoteCurrency: 'USD',
+  OracleQuoteUnit: oneUsd.toString(),
   ProtocolGlobalParams: {
     TokenDistributorPercentageBase: '10000',
     MockUsdPriceInWei: '5848466240000000',
@@ -238,7 +238,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.coverage]: ZERO_ADDRESS,
     [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
     [eEthereumNetwork.buidlerevm]: ZERO_ADDRESS,
-    [eEthereumNetwork.kovan]: '0x2c28827845528664160dbfF1eDecabf15634A70a',
+    [eEthereumNetwork.kovan]: '0xDfF89FF0C9B9C36489ceee4e83dad3226E40b143',
     [eEthereumNetwork.ropsten]: ZERO_ADDRESS,
     [eEthereumNetwork.main]: ZERO_ADDRESS,
     [eEthereumNetwork.tenderly]: ZERO_ADDRESS,
