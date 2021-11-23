@@ -37,6 +37,23 @@ task('rwa:mainnet', 'Deploy development enviroment')
     console.log('6. Initialize lending pool');
     await DRE.run('full:initialize-lending-pool', { verify, pool: POOL_NAME });
 
+    const oracle = await contractGetters.getAaveOracle();
+    await oracle.setAssetSources(
+      ['0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD', '0x10F7Fc1F91Ba351f9C629c5947AD69bD03C05b96'],
+      ['0x777A68032a88E5A84678A77Af2CD65A7b3c0775a', '0x777A68032a88E5A84678A77Af2CD65A7b3c0775a']
+    );
+
+    const permissionManager = await contractGetters.getPermissionManager();
+    await permissionManager.addPermissionAdmins(['0x0A735602a357802f553113F5831FE2fbf2F0E2e0']);
+    await permissionManager.addPermissions(
+      [0, 1, 2],
+      [
+        '0x0A735602a357802f553113F5831FE2fbf2F0E2e0',
+        '0x0A735602a357802f553113F5831FE2fbf2F0E2e0',
+        '0x0A735602a357802f553113F5831FE2fbf2F0E2e0',
+      ]
+    );
+
     if (verify) {
       printContracts();
       console.log('7. Verifying contracts');
@@ -56,7 +73,3 @@ task('rwa:mainnet', 'Deploy development enviroment')
     console.log('\nFinished migrations');
     printContracts();
   });
-
-const DEPOSITOR = 0,
-  BORROWER = 1,
-  LIQUIDATOR = 2;

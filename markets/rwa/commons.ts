@@ -39,7 +39,7 @@ export const CommonsConfig: ICommonConfiguration = {
   },
   // TODO: reorg alphabetically, checking the reason of tests failing
   LendingRateOracleRatesCommon: {
-    DAI: {
+    USDC: {
       borrowRate: oneRay.multipliedBy(0.039).toFixed(),
     },
   },
@@ -164,7 +164,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.hardhat]: {},
     [eEthereumNetwork.buidlerevm]: {},
     [eEthereumNetwork.kovan]: {
-      DAI: '0x22B58f1EbEDfCA50feF632bD73368b2FdA96D541',
+      USDC: '0x777A68032a88E5A84678A77Af2CD65A7b3c0775a',
       NS2DRP: ZERO_ADDRESS,
       FF1DRP: ZERO_ADDRESS,
       CF4DRP: ZERO_ADDRESS,
@@ -172,11 +172,9 @@ export const CommonsConfig: ICommonConfiguration = {
       HT2DRP: ZERO_ADDRESS,
       BR3DRP: ZERO_ADDRESS,
     },
-    [eEthereumNetwork.ropsten]: {
-      DAI: '0x64b8e49baded7bfb2fd5a9235b2440c0ee02971b',
-    },
+    [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
-      DAI: '0x773616E4d11A78F511299002da57A0a94577F1f4',
+      USDC: '0x986b5E1e1755e3C2440e960477f25201B0a8bbD4',
       NS2DRP: ZERO_ADDRESS,
       FF1DRP: ZERO_ADDRESS,
       CF4DRP: ZERO_ADDRESS,
@@ -185,7 +183,7 @@ export const CommonsConfig: ICommonConfiguration = {
       BR3DRP: ZERO_ADDRESS,
     },
     [eEthereumNetwork.tenderly]: {
-      DAI: '0x773616E4d11A78F511299002da57A0a94577F1f4',
+      USDC: '0x986b5E1e1755e3C2440e960477f25201B0a8bbD4',
     },
   },
   ReserveAssets: {

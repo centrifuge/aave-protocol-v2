@@ -97,6 +97,7 @@
     "kovan:verify:tokens": "npm run hardhat:kovan verify:tokens -- --pool Aave",
     "ropsten:verify:tokens": "npm run hardhat:ropsten verify:tokens -- --pool Aave",
     "mainnet:verify:tokens": "npm run hardhat:main verify:tokens -- --pool Aave",
+    "rwa:kovan:verify": "npm run hardhat:kovan verify:general -- --all --pool Rwa",
     "print-config:fork:mainnet": "FORK=main hardhat print-config:fork",
     "print-config:kovan": "hardhat --network kovan print-config --pool Aave --data-provider 0xA1901785c29cBd48bfA74e46b67C736b26054fa4",
     "external:deploy-assets-kovan": "npm run compile && hardhat --network kovan external:deploy-new-asset --symbol ${SYMBOL} --verify",
