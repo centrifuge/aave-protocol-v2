@@ -77,7 +77,8 @@ export const MOCK_CHAINLINK_AGGREGATORS_PRICES = {
   NS2DRP: oneEther.multipliedBy('1.0').toFixed(),
   FF1DRP: oneEther.multipliedBy('1.0').toFixed(),
   CF4DRP: oneEther.multipliedBy('1.0').toFixed(),
-  BL1DRP: oneEther.multipliedBy('1.0').toFixed(),
   HT2DRP: oneEther.multipliedBy('1.0').toFixed(),
   BR3DRP: oneEther.multipliedBy('1.0').toFixed(),
+  DF1DRP: oneEther.multipliedBy('1.0').toFixed(),
+  CGFF1DRP: oneEther.multipliedBy('1.0').toFixed(),
 };

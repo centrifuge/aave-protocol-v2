@@ -57,15 +57,6 @@ export const strategyCF4DRP: IReserveParams = {
   },
 };
 
-export const strategyBL1DRP: IReserveParams = {
-  ...baseStrategyDROP,
-  ...{
-    baseLTVAsCollateral: '9030', // 90.3% loan to value
-    liquidationThreshold: '9370', // 93.7% liquidation threshold
-    liquidationBonus: '10490', // 4.9% liquidation bonus
-  },
-};
-
 export const strategyHT2DRP: IReserveParams = {
   ...baseStrategyDROP,
   ...{
@@ -81,5 +72,23 @@ export const strategyBR3DRP: IReserveParams = {
     baseLTVAsCollateral: '8450', // 84.5% loan to value
     liquidationThreshold: '8750', // 87.5% liquidation threshold
     liquidationBonus: '10680', // 6.8% liquidation bonus
+  },
+};
+
+export const strategyDF1DRP: IReserveParams = {
+  ...baseStrategyDROP,
+  ...{
+    baseLTVAsCollateral: '9410', // 94.1% loan to value
+    liquidationThreshold: '9700', // 97% liquidation threshold
+    liquidationBonus: '10300', // 3% liquidation bonus
+  },
+};
+
+export const strategyCGFF1DRP: IReserveParams = {
+  ...baseStrategyDROP,
+  ...{
+    baseLTVAsCollateral: '8840', // 88.4% loan to value
+    liquidationThreshold: '9160', // 91.6% liquidation threshold
+    liquidationBonus: '10550', // 5.5% liquidation bonus
   },
 };

@@ -20,13 +20,7 @@ contract RwaMarketLiquidationProxy is ILendingPoolCollateralManager, Ownable {
     address[] calldata assets,
     address to
   ) external override returns (uint256, string memory) {
-    for (uint256 i = 0; i < assets.length; i++) {
-      require(
-        IRestrictedToken(assets[i]).hasMember(msg.sender) == true,
-        'sender is not a member for one of the assets'
-      );
-    }
-    ILendingPoolCollateralManager(collateralManager).seize(user, assets, to);
+    return (0, "not-allowed");
   }
 
   function liquidationCall(
