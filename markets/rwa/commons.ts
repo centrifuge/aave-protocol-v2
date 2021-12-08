@@ -175,7 +175,7 @@ export const CommonsConfig: ICommonConfiguration = {
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
-      USDC: '0x986b5E1e1755e3C2440e960477f25201B0a8bbD4',
+      USDC: '0x789190466E21a8b78b8027866CBBDc151542A26C',
       NS2DRP: ZERO_ADDRESS,
       FF1DRP: ZERO_ADDRESS,
       CF4DRP: ZERO_ADDRESS,
@@ -185,7 +185,7 @@ export const CommonsConfig: ICommonConfiguration = {
       CGFF1DRP: ZERO_ADDRESS,
     },
     [eEthereumNetwork.tenderly]: {
-      USDC: '0x986b5E1e1755e3C2440e960477f25201B0a8bbD4',
+      USDC: '0x789190466E21a8b78b8027866CBBDc151542A26C',
     },
   },
   ReserveAssets: {
