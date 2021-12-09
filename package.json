@@ -55,7 +55,7 @@
     "aave:main:add-market-to-new-registry": "npm run compile && npm run hardhat:matic -- add-market-to-registry --pool Matic --verify --deploy-registry",
     "aave:kovan:full:initialize": "npm run hardhat:kovan -- full:initialize-lending-pool --verify --pool Aave",
     "rwa:kovan:full:migration": "npm run compile && npm run hardhat:kovan -- rwa:mainnet --skip-registry",
-    "rwa:main:full:migration": "npm run compile && npm run hardhat:main -- rwa:mainnet --skip-registry",
+    "rwa:main:full:migration": "npm run compile && npm run hardhat:main -- rwa:mainnet",
     "rwa:fork:main": "npm run compile && FORK=main FORK_BLOCK_NUMBER=12875352 npx hardhat rwa:mainnet --skip-registry",
     "aave:ropsten:full:migration": "npm run compile && npm run hardhat:ropsten -- aave:mainnet --verify",
     "aave:fork:main:tenderly": "npm run compile && npm run hardhat:tenderly-main -- aave:mainnet",
