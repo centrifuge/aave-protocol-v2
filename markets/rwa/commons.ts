@@ -175,7 +175,7 @@ export const CommonsConfig: ICommonConfiguration = {
     },
     [eEthereumNetwork.ropsten]: {},
     [eEthereumNetwork.main]: {
-      USDC: '0x789190466E21a8b78b8027866CBBDc151542A26C',
+      USDC: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
       NS2DRP: ZERO_ADDRESS,
       FF1DRP: ZERO_ADDRESS,
       CF4DRP: ZERO_ADDRESS,
