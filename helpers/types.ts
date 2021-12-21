@@ -45,6 +45,7 @@ export enum AavePools {
   proto = 'proto',
   matic = 'matic',
   amm = 'amm',
+  rwa = 'rwa',
   arc = 'arc',
   avalanche = 'avalanche',
 }
@@ -96,6 +97,7 @@ export enum eContractid {
   UniswapLiquiditySwapAdapter = 'UniswapLiquiditySwapAdapter',
   UniswapRepayAdapter = 'UniswapRepayAdapter',
   FlashLiquidationAdapter = 'FlashLiquidationAdapter',
+  RwaMarketOracle = 'RwaMarketOracle',
   PermissionManager = 'PermissionManager',
   PermissionedStableDebtToken = 'PermissionedStableDebtToken',
   PermissionedVariableDebtToken = 'PermissionedVariableDebtToken',
@@ -257,6 +259,13 @@ export interface iAssetBase<T> {
   STAKE: T;
   xSUSHI: T;
   WAVAX: T;
+  NS2DRP: T;
+  FF1DRP: T;
+  CF4DRP: T;
+  HT2DRP: T;
+  BR3DRP: T;
+  DF1DRP: T;
+  CGFF1DRP: T;
 }
 
 export type iAssetsWithoutETH<T> = Omit<iAssetBase<T>, 'ETH'>;
@@ -288,9 +297,11 @@ export type iAavePoolAssets<T> = Pick<
   | 'xSUSHI'
 >;
 
-export type iAaveArcPoolAssets<T> = Pick<
+export type iAaveArcPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' | 'WETH' | 'AAVE'>;
+
+export type iRwaPoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
-  'USDC' | 'WBTC' | 'WETH' | 'AAVE'
+  'USDC' | 'NS2DRP' | 'FF1DRP' | 'CF4DRP' | 'HT2DRP'| 'BR3DRP' | 'DF1DRP' | 'CGFF1DRP'
 >;
 
 export type iLpPoolAssets<T> = Pick<
@@ -381,6 +392,13 @@ export enum TokenContractId {
   STAKE = 'STAKE',
   xSUSHI = 'xSUSHI',
   WAVAX = 'WAVAX',
+  NS2DRP = 'NS2DRP',
+  FF1DRP = 'FF1DRP',
+  CF4DRP = 'CF4DRP',
+  HT2DRP = 'HT2DRP',
+  BR3DRP = 'BR3DRP',
+  DF1DRP = 'DF1DRP',
+  CGFF1DRP = 'CGFF1DRP',
 }
 
 export interface IReserveParams extends IReserveBorrowParams, IReserveCollateralParams {
@@ -461,6 +479,7 @@ export interface iParamsPerPool<T> {
   [AavePools.proto]: T;
   [AavePools.matic]: T;
   [AavePools.amm]: T;
+  [AavePools.rwa]: T;
   [AavePools.arc]: T;
   [AavePools.avalanche]: T;
 }
@@ -554,6 +573,12 @@ export interface IAmmConfiguration extends ICommonConfiguration {
   ReservesConfig: iLpPoolAssets<IReserveParams>;
 }
 
+export interface IRwaConfiguration extends ICommonConfiguration {
+  ReservesConfig: iRwaPoolAssets<IReserveParams>;
+  AssessorContracts: iParamsPerNetwork<ITokenAddress>;
+  AssetCurrencies: iParamsPerNetwork<ITokenAddress>;
+}
+
 export interface IMaticConfiguration extends ICommonConfiguration {
   ReservesConfig: iMaticPoolAssets<IReserveParams>;
 }
@@ -570,4 +595,4 @@ export interface ITokenAddress {
   [token: string]: tEthereumAddress;
 }
 
-export type PoolConfiguration = ICommonConfiguration | IAaveConfiguration;
+export type PoolConfiguration = ICommonConfiguration | IAaveConfiguration | IRwaConfiguration;

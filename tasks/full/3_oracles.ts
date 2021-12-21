@@ -1,8 +1,12 @@
 import { task } from 'hardhat/config';
 import { getParamPerNetwork } from '../../helpers/contracts-helpers';
-import { deployAaveOracle, deployLendingRateOracle } from '../../helpers/contracts-deployments';
+import {
+  deployAaveOracle,
+  deployRwaMarketOracle,
+  deployLendingRateOracle,
+} from '../../helpers/contracts-deployments';
 import { setInitialMarketRatesInRatesOracleByHelper } from '../../helpers/oracles-helpers';
-import { ICommonConfiguration, eNetwork, SymbolMap } from '../../helpers/types';
+import { ICommonConfiguration, eNetwork, SymbolMap, IRwaConfiguration } from '../../helpers/types';
 import { waitForTx, notFalsyOrZeroAddress } from '../../helpers/misc-utils';
 import {
   ConfigNames,
@@ -38,19 +42,37 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
       const admin = await getGenesisPoolAdmin(poolConfig);
       const aaveOracleAddress = getParamPerNetwork(poolConfig.AaveOracle, network);
       const lendingRateOracleAddress = getParamPerNetwork(poolConfig.LendingRateOracle, network);
-      const fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const chainlinkAggregators = await getParamPerNetwork(ChainlinkAggregator, network);
 
       const tokensToWatch: SymbolMap<string> = {
         ...reserveAssets,
-        USD: UsdAddress,
       };
       const [tokens, aggregators] = getPairsTokenAggregator(
         tokensToWatch,
         chainlinkAggregators,
         poolConfig.OracleQuoteCurrency
       );
+
+      let fallbackOracleAddress = await getParamPerNetwork(FallbackOracle, network);
+      let rwaOracle;
+      if (poolConfig.MarketId === 'RWA Market') {
+        rwaOracle = await deployRwaMarketOracle(verify);
+        fallbackOracleAddress = rwaOracle.address;
+
+        const rwaConfig = poolConfig as IRwaConfiguration;
+        const assessorContracts = await getParamPerNetwork(rwaConfig.AssessorContracts, network);
+        const assetCurrencies = await getParamPerNetwork(rwaConfig.AssetCurrencies, network);
+        const dropTokens = Object.keys(assessorContracts);
+
+        await waitForTx(
+          await rwaOracle.setAssetConfig(
+            dropTokens.map((token) => tokensToWatch[token]),
+            dropTokens.map((token) => assessorContracts[token]),
+            dropTokens.map((token) => assetCurrencies[token])
+          )
+        );
+      }
 
       let aaveOracle: AaveOracle;
       let lendingRateOracle: LendingRateOracle;
@@ -70,6 +92,10 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
           verify
         );
         await waitForTx(await aaveOracle.setAssetSources(tokens, aggregators));
+      }
+
+      if (poolConfig.MarketId === 'RWA Market') {
+        await waitForTx(await rwaOracle.setAaveOracle(aaveOracle.address));
       }
 
       if (notFalsyOrZeroAddress(lendingRateOracleAddress)) {

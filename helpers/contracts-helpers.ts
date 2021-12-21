@@ -145,8 +145,14 @@ export const linkBytecode = (artifact: BuidlerArtifact | Artifact, libraries: an
 };
 
 export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNetwork) => {
-  const { main, ropsten, kovan, coverage, buidlerevm, tenderly } =
-    param as iEthereumParamsPerNetwork<T>;
+  const {
+    main,
+    ropsten,
+    kovan,
+    coverage,
+    buidlerevm,
+    tenderly,
+  } = param as iEthereumParamsPerNetwork<T>;
   const { matic, mumbai } = param as iPolygonParamsPerNetwork<T>;
   const { xdai } = param as iXDaiParamsPerNetwork<T>;
   const { avalanche, fuji } = param as iAvalancheParamsPerNetwork<T>;
@@ -192,7 +198,10 @@ export const getOptionalParamAddressPerNetwork = (
   return getParamPerNetwork(param, network);
 };
 
-export const getParamPerPool = <T>({ proto, amm, matic, arc, avalanche }: iParamsPerPool<T>, pool: AavePools) => {
+export const getParamPerPool = <T>(
+  { proto, amm, matic, arc, avalanche, rwa }: iParamsPerPool<T>,
+  pool: AavePools
+) => {
   switch (pool) {
     case AavePools.proto:
       return proto;
@@ -200,6 +209,8 @@ export const getParamPerPool = <T>({ proto, amm, matic, arc, avalanche }: iParam
       return amm;
     case AavePools.matic:
       return matic;
+    case AavePools.rwa:
+      return rwa;
     case AavePools.arc:
       return arc;
     case AavePools.avalanche:

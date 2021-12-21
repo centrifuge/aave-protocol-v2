@@ -52,8 +52,7 @@ task('verify:general', 'Verify contracts at Etherscan')
       : await getLendingPoolAddressesProviderRegistry();
     const lendingPoolAddress = await addressesProvider.getLendingPool();
     const lendingPoolConfiguratorAddress = await addressesProvider.getLendingPoolConfigurator(); //getLendingPoolConfiguratorProxy();
-    const lendingPoolCollateralManagerAddress =
-      await addressesProvider.getLendingPoolCollateralManager();
+    const lendingPoolCollateralManagerAddress = await addressesProvider.getLendingPoolCollateralManager();
 
     const lendingPoolProxy = await getProxy(lendingPoolAddress);
     const lendingPoolConfiguratorProxy = await getProxy(lendingPoolConfiguratorAddress);
@@ -86,14 +85,14 @@ task('verify:general', 'Verify contracts at Etherscan')
       const dataProvider = await getAaveProtocolDataProvider();
       const walletProvider = await getWalletProvider();
 
-      const wethGatewayAddress = getParamPerNetwork(WethGateway, network);
-    
-      const wethGateway = notFalsyOrZeroAddress(wethGatewayAddress)
-        ? await getWETHGateway(wethGatewayAddress)
-        : await getWETHGateway();
-/*
-      const permissionedWethGateway = await getPermissionedWETHGateway();
-*/
+      let wethGateway;
+      if (pool !== ConfigNames.Rwa) {
+        const wethGatewayAddress = getParamPerNetwork(WethGateway, network);
+        wethGateway = notFalsyOrZeroAddress(wethGatewayAddress)
+          ? await getWETHGateway(wethGatewayAddress)
+          : await getWETHGateway();
+      }
+
       // Address Provider
       console.log('\n- Verifying address provider...\n');
       await verifyContract(eContractid.LendingPoolAddressesProvider, addressesProvider, [MarketId]);
@@ -132,11 +131,13 @@ task('verify:general', 'Verify contracts at Etherscan')
       console.log('\n- Verifying  Wallet Balance Provider...\n');
       await verifyContract(eContractid.WalletBalanceProvider, walletProvider, []);
 
-      // WETHGateway
-      console.log('\n- Verifying  WETHGateway...\n');
-      await verifyContract(eContractid.WETHGateway, wethGateway, [
-        await getWrappedNativeTokenAddress(poolConfig),
-      ]);
+      if (pool !== ConfigNames.Rwa) {
+        // WETHGateway
+        console.log('\n- Verifying  WETHGateway...\n');
+        await verifyContract(eContractid.WETHGateway, wethGateway, [
+          await getWrappedNativeTokenAddress(poolConfig),
+        ]);
+      }
     }
     // Lending Pool proxy
     console.log('\n- Verifying  Lending Pool Proxy...\n');

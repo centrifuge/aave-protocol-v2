@@ -20,6 +20,7 @@ import {
   ATokenFactory,
   ATokensAndRatesHelperFactory,
   AaveOracleFactory,
+  RwaMarketOracleFactory,
   DefaultReserveInterestRateStrategyFactory,
   DelegationAwareATokenFactory,
   InitializableAdminUpgradeabilityProxyFactory,
@@ -54,7 +55,7 @@ import {
   PermissionedVariableDebtTokenFactory,
   PermissionedStableDebtTokenFactory,
   PermissionedLendingPoolFactory,
-  PermissionedWETHGatewayFactory
+  PermissionedWETHGatewayFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -203,9 +204,12 @@ export const deployLendingPool = async (verify?: boolean, lendingPoolImpl?: eCon
   const libraries = await deployAaveLibraries(verify);
 
   let instance;
-  switch(lendingPoolImpl) {
+  switch (lendingPoolImpl) {
     case eContractid.PermissionedLendingPool:
-      instance = await new PermissionedLendingPoolFactory(libraries, await getFirstSigner()).deploy();
+      instance = await new PermissionedLendingPoolFactory(
+        libraries,
+        await getFirstSigner()
+      ).deploy();
       break;
     case eContractid.LendingPool:
     default:
@@ -371,41 +375,38 @@ export const deployVariableDebtToken = async (
 };
 
 export const deployStableDebtTokenByType = async (type: string) => {
-
   //if no instance type is provided, deploying the generic one by default
-  if(!type) {
+  if (!type) {
     return deployGenericStableDebtToken();
   }
 
-  switch(type) {
+  switch (type) {
     case eContractid.StableDebtToken:
       return deployGenericStableDebtToken();
     case eContractid.PermissionedStableDebtToken:
       return deployPermissionedStableDebtToken();
     default:
-      console.log("Cant find the debt token type ", type);
-      throw "Invalid debt token type";
+      console.log('Cant find the debt token type ', type);
+      throw 'Invalid debt token type';
   }
-}
+};
 
 export const deployVariableDebtTokenByType = async (type: string, verify?: boolean) => {
-
   //if no instance type is provided, deploying the generic one by default
-  if(!type) {
+  if (!type) {
     return deployGenericVariableDebtToken(verify);
   }
 
-  switch(type) {
+  switch (type) {
     case eContractid.VariableDebtToken:
       return deployGenericVariableDebtToken(verify);
     case eContractid.PermissionedVariableDebtToken:
       return deployPermissionedVariableDebtToken();
     default:
-      console.log("[variable]Cant find token type ", type);
-      throw "Invalid debt token type";
+      console.log('[variable]Cant find token type ', type);
+      throw 'Invalid debt token type';
   }
-}
-
+};
 
 export const deployPermissionedStableDebtToken = async () =>
   withSaveAndVerify(
@@ -597,7 +598,6 @@ export const deployPermissionedWETHGateway = async (args: [tEthereumAddress], ve
     verify
   );
 
-
 export const authorizeWETHGateway = async (
   wethGateWay: tEthereumAddress,
   lendingPool: tEthereumAddress
@@ -719,6 +719,13 @@ export const deployFlashLiquidationAdapter = async (
     verify
   );
 
+export const deployRwaMarketOracle = async (verify?: boolean) =>
+  withSaveAndVerify(
+    await new RwaMarketOracleFactory(await getFirstSigner()).deploy(),
+    eContractid.RwaMarketOracle,
+    [],
+    verify
+  );
 export const chooseATokenDeployment = (id: eContractid) => {
   switch (id) {
     case eContractid.AToken:
@@ -783,9 +790,7 @@ export const deployRateStrategy = async (
 ): Promise<tEthereumAddress> => {
   switch (strategyName) {
     default:
-      return await (
-        await deployDefaultReserveInterestRateStrategy(args, verify)
-      ).address;
+      return await (await deployDefaultReserveInterestRateStrategy(args, verify)).address;
   }
 };
 export const deployMockParaSwapAugustus = async (verify?: boolean) =>

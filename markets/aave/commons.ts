@@ -240,7 +240,7 @@ export const CommonsConfig: ICommonConfiguration = {
       WBTC: '0xF7904a295A029a3aBDFFB6F12755974a958C7C25',
       YFI: '0xC5d1B1DEb2992738C0273408ac43e1e906086B6C',
       ZRX: '0xBc3f28Ccc21E9b5856E81E6372aFf57307E2E883',
-      USD: '0x9326BFA02ADD2366b30bacB125260Af641031331',
+      xSUSHI: '0x9326BFA02ADD2366b30bacB125260Af641031331',
     },
     [eEthereumNetwork.ropsten]: {
       AAVE: ZERO_ADDRESS,
@@ -262,7 +262,7 @@ export const CommonsConfig: ICommonConfiguration = {
       WBTC: '0x5b8B87A0abA4be247e660B0e0143bB30Cdf566AF',
       YFI: ZERO_ADDRESS,
       ZRX: '0x1d0052e4ae5b4ae4563cbac50edc3627ca0460d7',
-      USD: '0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
+      xSUSHI: '0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507',
     },
     [eEthereumNetwork.main]: {
       AAVE: '0x6Df09E975c830ECae5bd4eD9d90f3A95a4f88012',

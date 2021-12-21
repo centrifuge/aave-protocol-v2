@@ -28,14 +28,14 @@ import { BigNumber, BigNumberish } from 'ethers';
 import { ConfigNames } from './configuration';
 import { deployRateStrategy } from './contracts-deployments';
 
-
 import { ZERO_ADDRESS } from './constants';
 import { isZeroAddress } from 'ethereumjs-util';
 import { DefaultReserveInterestRateStrategy, DelegationAwareAToken } from '../types';
 import { config } from 'process';
 
-import {getContractAddressWithJsonFallback,
-rawInsertContractAddressInDb,
+import {
+  getContractAddressWithJsonFallback,
+  rawInsertContractAddressInDb,
 } from './contracts-helpers';
 
 export const chooseATokenDeployment = (id: eContractid) => {
@@ -45,7 +45,7 @@ export const chooseATokenDeployment = (id: eContractid) => {
     case eContractid.DelegationAwareAToken:
       return deployDelegationAwareAToken;
   }
-}
+};
 
 export const initReservesByHelper = async (
   reservesParams: iMultiPoolsAssets<IReserveParams>,
@@ -108,25 +108,32 @@ export const initReservesByHelper = async (
   let stableDebtTokensAddresses = new Map<string, tEthereumAddress>();
   let variableDebtTokensAddresses = new Map<string, tEthereumAddress>();
 
-  let stableDebtTokenTypes = Object.entries(reservesParams).map(item => item[1].stableDebtTokenImpl);
-  let variableDebtTokenTypes = Object.entries(reservesParams).map(item => item[1].variableDebtTokenImpl);
-
+  let stableDebtTokenTypes = Object.entries(reservesParams).map(
+    (item) => item[1].stableDebtTokenImpl
+  );
+  let variableDebtTokenTypes = Object.entries(reservesParams).map(
+    (item) => item[1].variableDebtTokenImpl
+  );
 
   // removing duplicates
   stableDebtTokenTypes = [...new Set(stableDebtTokenTypes)];
   variableDebtTokenTypes = [...new Set(variableDebtTokenTypes)];
 
-  await Promise.all(stableDebtTokenTypes.map(async(typeName) => {
-    const name = typeName ?? eContractid.StableDebtToken;
-    const implAddress = await (await deployStableDebtTokenByType(name)).address;
-    stableDebtTokensAddresses.set(name, implAddress);
-  }));
+  await Promise.all(
+    stableDebtTokenTypes.map(async (typeName) => {
+      const name = typeName ?? eContractid.StableDebtToken;
+      const implAddress = await (await deployStableDebtTokenByType(name)).address;
+      stableDebtTokensAddresses.set(name, implAddress);
+    })
+  );
 
-  await Promise.all(variableDebtTokenTypes.map(async(typeName) => {
-    const name = typeName ?? eContractid.VariableDebtToken;
-    const implAddress = await (await deployVariableDebtTokenByType(name)).address;
-    variableDebtTokensAddresses.set(name, implAddress);
-  }));
+  await Promise.all(
+    variableDebtTokenTypes.map(async (typeName) => {
+      const name = typeName ?? eContractid.VariableDebtToken;
+      const implAddress = await (await deployVariableDebtTokenByType(name)).address;
+      variableDebtTokensAddresses.set(name, implAddress);
+    })
+  );
 
   const aTokenImplementation = await deployGenericATokenImpl(verify);
   aTokenImplementationAddress = aTokenImplementation.address;
@@ -174,18 +181,19 @@ export const initReservesByHelper = async (
   }
 
   for (let i = 0; i < reserveSymbols.length; i++) {
-  
     const symbol = reserveSymbols[i];
     const strategy = reservesParams[symbol].strategy;
 
-    const stableDebtImpl = reservesParams[symbol].stableDebtTokenImpl ?? eContractid.StableDebtToken;
-    const variableDebtTokenImpl = reservesParams[symbol].variableDebtTokenImpl ?? eContractid.VariableDebtToken;
+    const stableDebtImpl =
+      reservesParams[symbol].stableDebtTokenImpl ?? eContractid.StableDebtToken;
+    const variableDebtTokenImpl =
+      reservesParams[symbol].variableDebtTokenImpl ?? eContractid.VariableDebtToken;
 
-    const stableDebtAddress =  stableDebtTokensAddresses.get(stableDebtImpl);
+    const stableDebtAddress = stableDebtTokensAddresses.get(stableDebtImpl);
     const variableDebtAddress = variableDebtTokensAddresses.get(variableDebtTokenImpl);
 
-    if(!stableDebtAddress || !variableDebtAddress) {
-      throw "Could not find a proper debt token instance for the asset "+symbol;
+    if (!stableDebtAddress || !variableDebtAddress) {
+      throw 'Could not find a proper debt token instance for the asset ' + symbol;
     }
 
     let aTokenToUse: string;
@@ -196,11 +204,14 @@ export const initReservesByHelper = async (
     }
 
     initInputParams.push({
-      aTokenImpl:  await getContractAddressWithJsonFallback(reservesParams[symbol].aTokenImpl, poolName),
-      stableDebtTokenImpl:stableDebtAddress,
+      aTokenImpl: await getContractAddressWithJsonFallback(
+        reservesParams[symbol].aTokenImpl,
+        poolName
+      ),
+      stableDebtTokenImpl: stableDebtAddress,
       variableDebtTokenImpl: variableDebtAddress,
       underlyingAssetDecimals: reservesParams[symbol].reserveDecimals,
-      interestRateStrategyAddress:  strategyAddresses[strategy.name],
+      interestRateStrategyAddress: strategyAddresses[strategy.name],
       underlyingAsset: tokenAddresses[symbol],
       treasury: treasuryAddress,
       incentivesController: incentivesController,
@@ -223,6 +234,7 @@ export const initReservesByHelper = async (
 
   console.log(`- Reserves initialization in ${chunkedInitInputParams.length} txs`);
   for (let chunkIndex = 0; chunkIndex < chunkedInitInputParams.length; chunkIndex++) {
+    console.log(`initReserve: ${JSON.stringify(chunkedInitInputParams[chunkIndex])}`);
     const tx3 = await waitForTx(
       await configurator.batchInitReserve(chunkedInitInputParams[chunkIndex])
     );
@@ -245,9 +257,10 @@ export const getPairsTokenAggregator = (
       const aggregatorAddressIndex = Object.keys(aggregatorsAddresses).findIndex(
         (value) => value === tokenSymbol
       );
-      const [, aggregatorAddress] = (
-        Object.entries(aggregatorsAddresses) as [string, tEthereumAddress][]
-      )[aggregatorAddressIndex];
+      const [, aggregatorAddress] = (Object.entries(aggregatorsAddresses) as [
+        string,
+        tEthereumAddress
+      ][])[aggregatorAddressIndex];
       return [tokenAddress, aggregatorAddress];
     }
   }) as [string, string][];
