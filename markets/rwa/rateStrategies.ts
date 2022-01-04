@@ -16,7 +16,7 @@ export const rateStrategyUSDC: IInterestRateStrategyParams = {
 // DROP
 export const rateStrategyDROP: IInterestRateStrategyParams = {
   name: 'rateStrategyDROP',
-  optimalUtilizationRate: '0',
+  optimalUtilizationRate: new BigNumber(0.45).multipliedBy(oneRay).toFixed(),
   baseVariableBorrowRate: '0',
   variableRateSlope1: '0',
   variableRateSlope2: '0',

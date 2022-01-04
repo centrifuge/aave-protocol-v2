@@ -98,6 +98,7 @@ export enum eContractid {
   UniswapRepayAdapter = 'UniswapRepayAdapter',
   FlashLiquidationAdapter = 'FlashLiquidationAdapter',
   RwaMarketOracle = 'RwaMarketOracle',
+  RwaMarketLiquidationProxy = 'RwaMarketLiquidationProxy',
   PermissionManager = 'PermissionManager',
   PermissionedStableDebtToken = 'PermissionedStableDebtToken',
   PermissionedVariableDebtToken = 'PermissionedVariableDebtToken',
@@ -301,7 +302,7 @@ export type iAaveArcPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'USDC' | 'WBTC' |
 
 export type iRwaPoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
-  'USDC' | 'NS2DRP' | 'FF1DRP' | 'CF4DRP' | 'HT2DRP'| 'BR3DRP' | 'DF1DRP' | 'CGFF1DRP'
+  'USDC' | 'NS2DRP' | 'FF1DRP' | 'CF4DRP' | 'HT2DRP' | 'BR3DRP' | 'DF1DRP' | 'CGFF1DRP'
 >;
 
 export type iLpPoolAssets<T> = Pick<
